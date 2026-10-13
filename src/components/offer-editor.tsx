@@ -3,6 +3,7 @@ import { ArrowDownToLine, Check, ChevronDown, ChevronRight, CircleHelp, FilePlus
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { OfferSign } from '@/components/offer-sign';
+import { BulkOfferSheet } from '@/components/bulk-offer-sheet';
 import { initialOffer, signSizes, type OfferSignData, type SignSize, type SignModel } from '@/lib/offer-sign';
 
 export function OfferEditor() {
@@ -11,6 +12,7 @@ export function OfferEditor() {
   const [notice, setNotice] = useState('');
   const [exporting, setExporting] = useState(false);
   const [help, setHelp] = useState(false);
+  const [section, setSection] = useState<'single' | 'sheet'>('single');
   const svgRef = useRef<SVGSVGElement>(null);
   const size = signSizes[data.size];
   function update<K extends keyof OfferSignData>(key: K, value: OfferSignData[K]) { setData(current => ({ ...current, [key]: value })); setNotice(''); }
@@ -60,6 +62,8 @@ export function OfferEditor() {
       <div className="header-right"><span className="session-badge"><span /> Edição livre</span><Button variant="ghost" size="icon" aria-label="Ajuda" title="Ajuda" onClick={() => setHelp(!help)}><CircleHelp /></Button></div>
     </header>
     <main className="main-shell">
+      <div className="section-tabs" role="tablist" aria-label="Tipo de criação"><button className={section === 'single' ? 'section-tab active' : 'section-tab'} onClick={() => setSection('single')} role="tab" aria-selected={section === 'single'}>Placa individual</button><button className={section === 'sheet' ? 'section-tab active' : 'section-tab'} onClick={() => setSection('sheet')} role="tab" aria-selected={section === 'sheet'}>Folha com 16 placas</button></div>
+      {section === 'sheet' ? <BulkOfferSheet /> : <>
       <div className="page-heading"><div><div className="breadcrumb">Estúdio <ChevronRight size={12} /> Nova placa</div><h1>Criar placa de oferta</h1></div><Button variant="outline" onClick={reset}><FilePlus2 />Nova placa</Button></div>
       {help && <div className="help-banner">Edite os dados do produto e escolha o tamanho. Baixe a imagem ou imprima em escala de 100%. Pequena 6×4: 6 × 4 cm; pequena: A6; média: A5; grande: A4.</div>}
       <div className="workspace">
@@ -86,6 +90,7 @@ export function OfferEditor() {
           <div className="notice" role="status">{notice || <><Check size={13} /> Sua placa é atualizada em tempo real</>}</div>
         </section>
       </div>
+      </>}
       <footer className="app-footer"><span>Feito para destacar suas melhores ofertas.</span><span><Tag size={13} /> ofertou.</span></footer>
     </main>
   </div>;
