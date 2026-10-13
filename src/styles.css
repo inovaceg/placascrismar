@@ -79,6 +79,9 @@ h1 { font-size: 27px; font-weight: 750; margin: 0; }
 .settings-section h2 { display: flex; align-items: center; gap: 10px; margin: 0 0 18px; font-size: 13px; font-weight: 750; }
 .step-number { display: grid; place-items: center; width: 22px; height: 22px; border-radius: 50%; background: var(--secondary); color: var(--muted-foreground); font-size: 11px; font-weight: 600; }
 .model-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.color-mode-options { display: grid; grid-template-columns: .85fr 1.15fr; gap: 7px; margin-bottom: 16px; }
+.color-mode-options button { font-size: 10px; padding-inline: 7px; gap: 6px; }
+.color-mode-options button svg { width: 14px; height: 14px; }
 .model-option { height: auto; padding: 6px; border: 1px solid var(--border); display: flex; flex-direction: column; background: var(--card); gap: 0; border-radius: 6px; overflow: hidden; }
 .model-option:hover { border-color: var(--primary); }
 .model-selected { border-color: var(--primary); background: var(--selected-surface); box-shadow: 0 0 0 1px var(--primary); }
@@ -138,6 +141,11 @@ h1 { font-size: 27px; font-weight: 750; margin: 0; }
 .hot-title { font-weight: 900; font-style: italic; }
 .sign-hot .sign-red { fill: oklch(.52 .204 24); }
 .sign-hot .sign-red-text { fill: oklch(.52 .204 24); }
+/* Portable print palette: white paper, black typography and thin outlines. */
+.sign-monochrome .sign-yellow, .sign-monochrome .sign-red { fill: oklch(1 0 0); }
+.sign-monochrome .sign-red, .sign-monochrome .sign-outline { stroke: oklch(0 0 0); stroke-width: 3; }
+.sign-monochrome path.sign-yellow { stroke: oklch(0 0 0); stroke-width: 2; }
+.sign-monochrome .sign-white, .sign-monochrome .sign-yellow-text, .sign-monochrome .sign-red-text, .sign-monochrome .sign-ink { fill: oklch(0 0 0); }
 .zoom-controls { position: absolute; bottom: 18px; left: 50%; transform: translateX(-50%); height: 35px; border: 1px solid var(--border); border-radius: 6px; background: var(--card); display: flex; align-items: center; padding: 0 3px; box-shadow: 0 2px 5px oklch(.2 0 0 / .04); }
 .zoom-controls button { width: 31px; height: 29px; }
 .zoom-controls svg { width: 13px; height: 13px; }

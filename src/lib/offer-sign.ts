@@ -1,5 +1,6 @@
 export type SignSize = 'small' | 'medium' | 'large';
 export type SignModel = 'classic' | 'hot';
+export type SignColorMode = 'color' | 'monochrome';
 export interface OfferSignData {
   product: string;
   description: string;
@@ -9,6 +10,7 @@ export interface OfferSignData {
   footer: string;
   showFooter: boolean;
   model: SignModel;
+  colorMode: SignColorMode;
   size: SignSize;
 }
 export const signSizes = {
@@ -19,7 +21,7 @@ export const signSizes = {
 export const initialOffer: OfferSignData = {
   product: 'ARROZ BRANCO', description: 'Tipo 1 • Pacote de 5 kg', price: '19,90', unit: 'unidade',
   previousPrice: '24,90', footer: 'Oferta válida enquanto durarem os estoques.', showFooter: true,
-  model: 'classic', size: 'medium',
+  model: 'classic', size: 'medium', colorMode: 'color',
 };
 export function priceParts(value: string): [string, string] {
   const parsed = Number(value.replace(/\./g, '').replace(',', '.'));

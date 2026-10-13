@@ -1,5 +1,5 @@
 import { useRef, useState } from 'react';
-import { ArrowDownToLine, Check, ChevronDown, ChevronRight, CircleHelp, FilePlus2, Flame, Image, Maximize, Minus, Plus, Printer, RotateCcw, Tag, Type } from 'lucide-react';
+import { ArrowDownToLine, Check, ChevronDown, ChevronRight, CircleHelp, FilePlus2, Image, Maximize, Minus, Plus, Printer, Tag, Type, Palette, Contrast } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { OfferSign } from '@/components/offer-sign';
@@ -27,7 +27,7 @@ export function OfferEditor() {
         const copy = copies[index];
         if (!copy) return;
         const computed = getComputedStyle(element);
-        for (const property of ['font-family', 'font-weight', 'font-style', 'fill', 'stroke']) {
+        for (const property of ['font-family', 'font-weight', 'font-style', 'fill', 'stroke', 'stroke-width']) {
           copy.setAttribute(property, computed.getPropertyValue(property));
         }
       });
@@ -44,7 +44,7 @@ export function OfferEditor() {
         const ctx = canvas.getContext('2d'); if (!ctx) throw new Error('canvas');
         ctx.drawImage(image, 0, 0);
         const blob = await new Promise<Blob>((resolve, reject) => canvas.toBlob(value => value ? resolve(value) : reject(new Error('export')), 'image/png'));
-        const output = URL.createObjectURL(blob); const link = document.createElement('a'); link.href = output; link.download = `oferta-${data.product.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${size.format}.png`; link.click(); setTimeout(() => URL.revokeObjectURL(output), 2000);
+        const output = URL.createObjectURL(blob); const link = document.createElement('a'); link.href = output; link.download = `oferta-${data.product.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-${size.format}${data.colorMode === 'monochrome' ? '-preto-e-branco' : ''}.png`; link.click(); setTimeout(() => URL.revokeObjectURL(output), 2000);
         setNotice('Imagem baixada com sucesso.');
       } finally { URL.revokeObjectURL(url); }
     } catch { setNotice('Não foi possível baixar. Tente novamente.'); }
@@ -64,7 +64,11 @@ export function OfferEditor() {
       {help && <div className="help-banner">Edite os dados do produto e escolha o tamanho. Baixe a imagem ou imprima em escala de 100%. Pequena: A6; média: A5; grande: A4.</div>}
       <div className="workspace">
         <aside className="settings-panel">
-          <section className="settings-section"><h2><span className="step-number">1</span> Escolha o modelo</h2><div className="model-grid">
+          <section className="settings-section"><h2><span className="step-number">1</span> Escolha o modelo</h2>
+          <div className="color-mode-options" role="group" aria-label="Cor da placa">
+            <Button variant={data.colorMode === 'color' ? 'default' : 'outline'} aria-pressed={data.colorMode === 'color'} onClick={() => update('colorMode', 'color')}><Palette />Colorido</Button>
+            <Button variant={data.colorMode === 'monochrome' ? 'default' : 'outline'} aria-pressed={data.colorMode === 'monochrome'} onClick={() => update('colorMode', 'monochrome')}><Contrast />Preto e branco</Button>
+          </div><div className="model-grid">
             {(['classic', 'hot'] as SignModel[]).map(model => <Button key={model} variant="model" className={data.model === model ? 'model-selected' : ''} onClick={() => update('model', model)} aria-pressed={data.model === model}><span className="model-image"><OfferSign data={{ ...data, model }} miniature /></span><span className="model-name">{model === 'classic' ? 'Oferta clássica' : 'Oferta quente'}{data.model === model && <span className="model-check"><Check size={11} /></span>}</span></Button>)}
           </div></section>
           <section className="settings-section"><h2><span className="step-number">2</span> Dados do produto</h2>
