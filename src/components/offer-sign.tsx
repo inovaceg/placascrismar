@@ -1,9 +1,10 @@
 import { forwardRef } from 'react';
 import { type OfferSignData, priceParts, wrapProduct } from '@/lib/offer-sign';
 
-export const OfferSign = forwardRef<SVGSVGElement, { data: OfferSignData; miniature?: boolean; hideCurrency?: boolean }>(function OfferSign({ data, miniature = false, hideCurrency = false }, ref) {
+export const OfferSign = forwardRef<SVGSVGElement, { data: OfferSignData; miniature?: boolean; hideCurrency?: boolean; descriptionFontSize?: number }>(function OfferSign({ data, miniature = false, hideCurrency = false, descriptionFontSize }, ref) {
   const [whole, cents] = priceParts(data.price);
   const lines = wrapProduct(data.product || 'SEU PRODUTO');
+  const descriptionLines = wrapProduct(data.description, 24).slice(0, 2);
   const hot = data.model === 'hot';
   const productFont = Math.min(44, 500 / Math.max(...lines.map(line => line.length), 1));
   const priceFont = data.size === 'compact' ? Math.min(240, 560 / Math.max(whole.length * .57, 1)) : Math.min(150, 360 / Math.max(whole.length * .57, 1));
@@ -22,7 +23,7 @@ export const OfferSign = forwardRef<SVGSVGElement, { data: OfferSignData; miniat
     </>}
     {!miniature && <>
       {lines.map((line, i) => <text key={i} x="300" y={productStart + 58 + i * (productFont + 8)} textAnchor="middle" className="sign-ink sign-product" fontSize={productFont}>{line}</text>)}
-      <text x="300" y={productStart + 94 + lines.length * (productFont + 8)} textAnchor="middle" className="sign-ink" fontSize={Math.min(24, 880 / Math.max(data.description.length, 1))}>{data.description}</text>
+      {descriptionLines.map((line, index) => <text key={`description-${index}`} x="300" y={productStart + 94 + lines.length * (productFont + 8) + index * (descriptionFontSize ? descriptionFontSize + 4 : 0)} textAnchor="middle" className="sign-ink" fontSize={descriptionFontSize ?? Math.min(24, 880 / Math.max(data.description.length, 1))}>{line}</text>)}
       {data.previousPrice && <text x="300" y="438" textAnchor="middle" className="sign-ink" fontSize="25">De R$ <tspan textDecoration="line-through">{data.previousPrice}</tspan> por</text>}
       {!hideCurrency && <text x={data.size === 'compact' ? 300 : 69} y={data.size === 'compact' ? 585 : 510} textAnchor={data.size === 'compact' ? 'middle' : undefined} className="sign-red-text sign-product" fontSize={data.size === 'compact' ? 32 : 37}>R$</text>}
       <text x="300" y={data.size === 'compact' ? 650 : 589} textAnchor="middle" className="sign-red-text sign-price" fontSize={priceFont}>{whole}<tspan fontSize={priceFont * .55} dy={-priceFont * .29}>,{cents}</tspan></text>
