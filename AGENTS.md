@@ -12,5 +12,6 @@
 ## Application rules
 - Keep the offer editor client-side and session-scoped; no account or persistent collection is required for editing and exporting a single sign.
 - Render offer artwork with the shared SVG component for both previews and PNG export so product details stay consistent across outputs.
+- Store the color mode independently of the sign model so changing palettes preserves edited details and works for every model and output.
 - Keep paper dimensions and price parsing in the shared offer-sign module so print and export use the same values.
 - Define visual tokens and editor styling in the global design system, including standalone SVG colors for portable exports.
