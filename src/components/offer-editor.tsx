@@ -21,6 +21,16 @@ export function OfferEditor() {
     setExporting(true);
     try {
       const clone = svg.cloneNode(true) as SVGSVGElement;
+      const originals = [svg, ...Array.from(svg.querySelectorAll('*'))];
+      const copies = [clone, ...Array.from(clone.querySelectorAll('*'))];
+      originals.forEach((element, index) => {
+        const copy = copies[index];
+        if (!copy) return;
+        const computed = getComputedStyle(element);
+        for (const property of ['font-family', 'font-weight', 'font-style', 'fill', 'stroke']) {
+          copy.setAttribute(property, computed.getPropertyValue(property));
+        }
+      });
       const style = document.createElementNS('http://www.w3.org/2000/svg', 'style');
       style.textContent = Array.from(document.styleSheets).flatMap(sheet => { try { return Array.from(sheet.cssRules).filter(rule => rule.cssText.includes('sign-')).map(rule => rule.cssText); } catch { return []; } }).join('\n');
       clone.prepend(style);
