@@ -24,7 +24,7 @@ export const OfferSign = forwardRef<SVGSVGElement, { data: OfferSignData; miniat
       {lines.map((line, i) => <text key={i} x="300" y={productStart + 58 + i * (productFont + 8)} textAnchor="middle" className="sign-ink sign-product" fontSize={productFont}>{line}</text>)}
       <text x="300" y={productStart + 94 + lines.length * (productFont + 8)} textAnchor="middle" className="sign-ink" fontSize={Math.min(24, 880 / Math.max(data.description.length, 1))}>{data.description}</text>
       {data.previousPrice && <text x="300" y="438" textAnchor="middle" className="sign-ink" fontSize="25">De R$ <tspan textDecoration="line-through">{data.previousPrice}</tspan> por</text>}
-      <text x={data.size === 'compact' ? 72 : 69} y={data.size === 'compact' ? 625 : 510} className="sign-red-text sign-product" fontSize={data.size === 'compact' ? 42 : 37}>R$</text>
+      <text x={data.size === 'compact' ? 300 : 69} y={data.size === 'compact' ? 585 : 510} textAnchor={data.size === 'compact' ? 'middle' : undefined} className="sign-red-text sign-product" fontSize={data.size === 'compact' ? 32 : 37}>R$</text>
       <text x="300" y={data.size === 'compact' ? 650 : 589} textAnchor="middle" className="sign-red-text sign-price" fontSize={priceFont}>{whole}<tspan fontSize={priceFont * .55} dy={-priceFont * .29}>,{cents}</tspan></text>
       <text x="300" y={data.size === 'compact' ? 710 : 641} textAnchor="middle" className="sign-ink" fontSize="25">/ {data.unit}</text>
     </>}
