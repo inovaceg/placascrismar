@@ -21,10 +21,11 @@ export const initialOffer: OfferSignData = {
   previousPrice: '24,90', footer: 'Oferta válida enquanto durarem os estoques.', showFooter: true,
   model: 'classic', size: 'medium',
 };
-export function priceParts(value: string) {
+export function priceParts(value: string): [string, string] {
   const parsed = Number(value.replace(/\./g, '').replace(',', '.'));
   if (!Number.isFinite(parsed) || parsed < 0) return ['0', '00'];
-  return parsed.toFixed(2).split('.');
+  const [whole = '0', cents = '00'] = parsed.toFixed(2).split('.');
+  return [whole, cents];
 }
 export function wrapProduct(value: string, limit = 18): string[] {
   const words = value.trim().toUpperCase().split(/\s+/);
