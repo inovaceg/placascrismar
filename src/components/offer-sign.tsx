@@ -6,7 +6,7 @@ export const OfferSign = forwardRef<SVGSVGElement, { data: OfferSignData; miniat
   const lines = wrapProduct(data.product || 'SEU PRODUTO');
   const hot = data.model === 'hot';
   const productFont = Math.min(44, 500 / Math.max(...lines.map(line => line.length), 1));
-  const priceFont = data.size === 'compact' ? Math.min(190, 440 / Math.max(whole.length * .57, 1)) : Math.min(150, 360 / Math.max(whole.length * .57, 1));
+  const priceFont = data.size === 'compact' ? Math.min(240, 560 / Math.max(whole.length * .57, 1)) : Math.min(150, 360 / Math.max(whole.length * .57, 1));
   const productStart = hot ? 235 : 210;
   return <svg ref={ref} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 848" preserveAspectRatio={data.size === 'compact' ? 'none' : 'xMidYMid meet'} role="img" aria-label={`Placa de oferta: ${data.product}, R$ ${data.price}`} className={`offer-sign ${hot ? 'sign-hot' : 'sign-classic'} ${data.colorMode === 'monochrome' ? 'sign-monochrome' : ''} ${miniature ? 'sign-miniature' : ''} sign-size-${data.size}`}>
     <rect width="600" height="848" className="sign-yellow" />
