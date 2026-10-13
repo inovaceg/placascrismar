@@ -1,4 +1,4 @@
-export type SignSize = 'small' | 'medium' | 'large';
+export type SignSize = 'compact' | 'small' | 'medium' | 'large';
 export type SignModel = 'classic' | 'hot';
 export type SignColorMode = 'color' | 'monochrome';
 export interface OfferSignData {
@@ -14,6 +14,7 @@ export interface OfferSignData {
   size: SignSize;
 }
 export const signSizes = {
+  compact: { label: 'Pequena 6×4', format: '6 × 4 cm', width: 60, height: 40 },
   small: { label: 'Pequena', format: 'A6', width: 105, height: 148 },
   medium: { label: 'Média', format: 'A5', width: 148, height: 210 },
   large: { label: 'Grande', format: 'A4', width: 210, height: 297 },

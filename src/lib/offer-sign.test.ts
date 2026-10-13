@@ -2,8 +2,9 @@ import { describe, expect, it } from 'vitest';
 import { priceParts, signSizes, wrapProduct } from './offer-sign';
 
 describe('Offer sign data', () => {
-  it('provides the three requested sizes: small, medium and large', () => {
-    expect(Object.keys(signSizes)).toEqual(['small', 'medium', 'large']);
+  it('provides the compact 6×4 cm size alongside the standard formats', () => {
+    expect(Object.keys(signSizes)).toEqual(['compact', 'small', 'medium', 'large']);
+    expect(signSizes.compact).toMatchObject({ width: 60, height: 40 });
     expect(signSizes.small.width).toBeLessThan(signSizes.medium.width);
     expect(signSizes.medium.width).toBeLessThan(signSizes.large.width);
   });
