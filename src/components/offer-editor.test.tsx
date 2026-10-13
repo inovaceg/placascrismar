@@ -12,7 +12,7 @@ describe('Offer color modes', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Preto e branco' }));
     expect(product.value).toBe('CAFÉ TORRADO');
     expect(price.value).toBe('8,49');
-    fireEvent.click(screen.getByRole('button', { name: 'Oferta quente' }));
+    fireEvent.click(screen.getByRole('button', { name: /Oferta quente/ }));
     fireEvent.click(screen.getByRole('button', { name: 'Colorido' }));
     expect(product.value).toBe('CAFÉ TORRADO');
     expect(price.value).toBe('8,49');
