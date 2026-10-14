@@ -1,40 +1,38 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Printer, RotateCcw } from 'lucide-react';
 import { OfferSign } from '@/components/offer-sign';
 import { Button } from '@/components/ui/button';
+import { loadCatalog, replaceCatalog } from '@/lib/catalog-store';
 import { readExcelCatalog, type CatalogItem } from '@/lib/excel-catalog';
 import { initialOffer, type SignModel } from '@/lib/offer-sign';
 
 type BulkItem = { barcode: string; product: string; price: string };
 const emptyItem = (): BulkItem => ({ barcode: '', product: '', price: '' });
-const catalogKey = 'crismar-offer-catalog';
-
-function loadSavedCatalog(): CatalogItem[] {
-  try {
-    const saved = localStorage.getItem(catalogKey);
-    const parsed = saved ? JSON.parse(saved) : [];
-    return Array.isArray(parsed) ? parsed.filter(item => item && typeof item.barcode === 'string') : [];
-  } catch { return []; }
-}
-
-function saveCatalog(items: CatalogItem[]) {
-  localStorage.setItem(catalogKey, JSON.stringify(items));
-}
 
 export function BulkOfferSheet() {
   const [items, setItems] = useState(() => Array.from({ length: 16 }, emptyItem));
   const [colorMode, setColorMode] = useState<'color' | 'monochrome'>('color');
   const [model, setModel] = useState<SignModel>('minimal');
   const [sheetCount, setSheetCount] = useState<9 | 16>(16);
-  const [catalog, setCatalog] = useState<CatalogItem[]>(loadSavedCatalog);
+  const [catalog, setCatalog] = useState<CatalogItem[]>([]);
   const [catalogNotice, setCatalogNotice] = useState('');
+
+  useEffect(() => {
+    let active = true;
+    loadCatalog().then(loaded => {
+      if (!active) return;
+      setCatalog(loaded);
+      if (loaded.length) setCatalogNotice(`${loaded.length} produtos disponíveis para consulta.`);
+    }).catch(() => { if (active) setCatalogNotice('Não foi possível carregar o catálogo salvo.'); });
+    return () => { active = false; };
+  }, []);
 
   async function importCatalog(file: File) {
     try {
       const loaded = await readExcelCatalog(file);
-      saveCatalog(loaded);
+      await replaceCatalog(loaded);
       setCatalog(loaded);
-      setCatalogNotice(loaded.length ? `${loaded.length} produtos gravados. O arquivo anterior foi substituído.` : 'Nenhum produto encontrado. Confira as colunas B, D e F.');
+      setCatalogNotice(loaded.length ? `${loaded.length} produtos gravados no banco. O arquivo anterior foi substituído.` : 'Nenhum produto encontrado. Confira as colunas B, D e F.');
     } catch (error) {
       setCatalog([]);
       setCatalogNotice(error instanceof Error ? `Erro ao importar: ${error.message}` : 'Não foi possível ler este arquivo Excel.');
