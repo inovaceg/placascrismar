@@ -10,7 +10,7 @@ export const OfferSign = forwardRef<SVGSVGElement, { data: OfferSignData; miniat
   const hot = data.model === 'hot';
   const productFont = Math.min(44, 500 / Math.max(...lines.map(line => line.length), 1));
   const priceFont = data.size === 'compact' ? Math.min(240, 560 / Math.max(whole.length * .57, 1)) : Math.min(190, 440 / Math.max(whole.length * .57, 1));
-  const productStart = hot ? 235 : 210;
+  const productStart = hot ? 265 : 210;
   return <svg ref={ref} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 848" preserveAspectRatio={data.size === 'compact' ? 'none' : 'xMidYMid meet'} role="img" aria-label={`Placa de oferta: ${data.product}, R$ ${data.price}`} className={`offer-sign ${hot ? 'sign-hot' : 'sign-classic'} ${data.colorMode === 'monochrome' ? 'sign-monochrome' : ''} ${miniature ? 'sign-miniature' : ''} sign-size-${data.size}`}>
     <rect width="600" height="848" className="sign-yellow" />
     {hot ? <>
@@ -26,10 +26,10 @@ export const OfferSign = forwardRef<SVGSVGElement, { data: OfferSignData; miniat
     {!miniature && <>
       {lines.map((line, i) => <text key={i} x="300" y={productStart + 58 + i * (productFont + 8)} textAnchor="middle" className="sign-ink sign-product" fontSize={productFont}>{line}</text>)}
       {descriptionLines.map((line, index) => <text key={`description-${index}`} x="300" y={productStart + 94 + lines.length * (productFont + 8) + index * (descriptionFontSize ? descriptionFontSize + 4 : 0)} textAnchor="middle" className="sign-ink" fontSize={descriptionFontSize ?? Math.min(30, 1080 / Math.max(data.description.length, 1))}>{line}</text>)}
-      {data.previousPrice && <text x="300" y="438" textAnchor="middle" className="sign-ink" fontSize="25">De R$ <tspan textDecoration="line-through">{data.previousPrice}</tspan> por</text>}
-      {!hideCurrency && <text x={data.size === 'compact' ? 250 : 42} y={data.size === 'compact' ? 585 : 510} textAnchor={data.size === 'compact' ? 'middle' : undefined} className="sign-red-text sign-product" fontSize={data.size === 'compact' ? 32 : 37}>R$</text>}
-      <text x="300" y={data.size === 'compact' ? 650 : 589} textAnchor="middle" className="sign-red-text sign-price" fontSize={priceFont}>{whole}<tspan fontSize={priceFont * .55} dy={-priceFont * .29}>,{cents}</tspan></text>
-      <text x="300" y={data.size === 'compact' ? 710 : 641} textAnchor="middle" className="sign-ink" fontSize="25">/ {data.unit}</text>
+      {data.previousPrice && <text x="300" y={hot ? 468 : 438} textAnchor="middle" className="sign-ink" fontSize="25">De R$ <tspan textDecoration="line-through">{data.previousPrice}</tspan> por</text>}
+      {!hideCurrency && <text x={data.size === 'compact' ? 250 : 42} y={data.size === 'compact' ? 585 : hot ? 540 : 510} textAnchor={data.size === 'compact' ? 'middle' : undefined} className="sign-red-text sign-product" fontSize={data.size === 'compact' ? 32 : 37}>R$</text>}
+      <text x="300" y={data.size === 'compact' ? 650 : hot ? 619 : 589} textAnchor="middle" className="sign-red-text sign-price" fontSize={priceFont}>{whole}<tspan fontSize={priceFont * .55} dy={-priceFont * .29}>,{cents}</tspan></text>
+      <text x="300" y={data.size === 'compact' ? 710 : hot ? 671 : 641} textAnchor="middle" className="sign-ink" fontSize="25">/ {data.unit}</text>
     </>}
     {hot ? <path d="M0 744C100 826 204 829 288 790C380 747 420 706 493 738C535 756 553 774 600 740V848H0Z" className="sign-red" /> : <path d="M0 780C220 792 377 741 600 776V848H0Z" className="sign-red" />}
     {hot && <text x="555" y="813" textAnchor="end" className="sign-yellow-text hot-title" fontSize="37">Aproveite!</text>}
