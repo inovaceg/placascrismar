@@ -3,7 +3,7 @@ import { type OfferSignData, priceParts, wrapProduct } from '@/lib/offer-sign';
 import { MinimalOfferSign } from '@/components/minimal-offer-sign';
 
 export const OfferSign = forwardRef<SVGSVGElement, { data: OfferSignData; miniature?: boolean; hideCurrency?: boolean }>(function OfferSign({ data, miniature = false, hideCurrency = false }, ref) {
- if (data.model === 'minimal') return <MinimalOfferSign data={data} miniature={miniature} hideCurrency={hideCurrency} ref={ref} />;
+ if (data.model === 'minimal') return <MinimalOfferSign data={data} miniature={miniature} ref={ref} />;
  const [whole, cents] = priceParts(data.price);
  const lines = wrapProduct(data.product || 'SEU PRODUTO'); const hot = data.model === 'hot';
  const productFont = Math.min(44, 500 / Math.max(...lines.map(line => line.length), 1));
