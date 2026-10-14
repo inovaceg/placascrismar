@@ -62,7 +62,7 @@ export function OfferEditor() {
       <div className="header-right"><span className="session-badge"><span /> Edição livre</span><Button variant="ghost" size="icon" aria-label="Ajuda" title="Ajuda" onClick={() => setHelp(!help)}><CircleHelp /></Button></div>
     </header>
     <main className="main-shell">
-      <div className="section-tabs" role="tablist" aria-label="Tipo de criação"><button className={section === 'single' ? 'section-tab active' : 'section-tab'} onClick={() => setSection('single')} role="tab" aria-selected={section === 'single'}>Placa individual</button><button className={section === 'sheet' ? 'section-tab active' : 'section-tab'} onClick={() => setSection('sheet')} role="tab" aria-selected={section === 'sheet'}>Folha com 16 placas</button></div>
+      <div className="section-tabs" role="tablist" aria-label="Tipo de criação"><button className={section === 'sheet' ? 'section-tab active' : 'section-tab'} onClick={() => setSection('sheet')} role="tab" aria-selected={section === 'sheet'}>Folha com 16 placas</button><button className={section === 'single' ? 'section-tab active' : 'section-tab'} onClick={() => setSection('single')} role="tab" aria-selected={section === 'single'}>Placa individual</button></div>
       {section === 'sheet' ? <BulkOfferSheet /> : <>
       <div className="page-heading"><div><div className="breadcrumb">Estúdio <ChevronRight size={12} /> Nova placa</div><h1>Criar placa de oferta</h1></div><Button variant="outline" onClick={reset}><FilePlus2 />Nova placa</Button></div>
       {help && <div className="help-banner">Edite os dados do produto e escolha o tamanho. Baixe a imagem ou imprima em escala de 100%. Pequena 6×4: 6 × 4 cm; pequena: A6; média: A5; grande: A4.</div>}
