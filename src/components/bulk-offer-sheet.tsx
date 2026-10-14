@@ -16,7 +16,7 @@ export function BulkOfferSheet() {
   const [sheetCount, setSheetCount] = useState<9 | 16>(16);
   const [catalog, setCatalog] = useState<CatalogItem[]>([]);
   const [catalogNotice, setCatalogNotice] = useState('');
-  async function importCatalog(file: File) { try { const loaded = await readExcelCatalog(file); setCatalog(loaded); setCatalogNotice(`${loaded.length} produtos importados.`); } catch { setCatalogNotice('Não foi possível ler este arquivo Excel.'); } }
+  async function importCatalog(file: File) { try { const loaded = await readExcelCatalog(file); setCatalog(loaded); setCatalogNotice(`${loaded.length} produtos importados.`); } catch (error) { setCatalogNotice(error instanceof Error ? `Erro ao importar: ${error.message}` : 'Não foi possível ler este arquivo Excel.'); } }
   function update(index: number, key: keyof BulkItem, value: string) {
     setItems(current => current.map((item, itemIndex) => { if (itemIndex !== index) return item; const match = key === 'barcode' ? catalog.find(entry => entry.barcode === value.trim()) : undefined; return match ? { ...item, barcode: value, product: match.description, description: '', price: match.price } : { ...item, [key]: value }; }));
   }
