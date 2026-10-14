@@ -57,7 +57,7 @@ export function OfferEditor() {
   }
   return <div className="editor-app">
     <header className="app-header">
-      <a href="/" className="brand" aria-label="Ofertou, início"><span className="brand-symbol"><Tag size={22} strokeWidth={2.4} /></span>ofertou<span className="brand-dot">.</span></a>
+      <a href="/" className="brand" aria-label="Crismar Placas de Ofertas, início"><span className="brand-symbol"><Tag size={22} strokeWidth={2.4} /></span>Crismar Placas de Ofertas</a>
       <span className="header-divider" /><span className="studio-label">Estúdio de ofertas</span>
       <div className="header-right"><span className="session-badge"><span /> Edição livre</span><Button variant="ghost" size="icon" aria-label="Ajuda" title="Ajuda" onClick={() => setHelp(!help)}><CircleHelp /></Button></div>
     </header>
@@ -91,7 +91,7 @@ export function OfferEditor() {
         </section>
       </div>
       </>}
-      <footer className="app-footer"><span>Feito para destacar suas melhores ofertas.</span><span><Tag size={13} /> ofertou.</span></footer>
+      <footer className="app-footer"><span>Feito para destacar suas melhores ofertas.</span><span><Tag size={13} /> Crismar Placas de Ofertas</span></footer>
     </main>
   </div>;
 }

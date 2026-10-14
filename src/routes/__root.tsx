@@ -78,9 +78,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Ofertou — Estúdio de ofertas" },
+      { title: "Crismar Placas de Ofertas — Criação de placas de ofertas" },
       { name: "description", content: "Placas de ofertas personalizadas para seus produtos." },
-      { property: "og:title", content: "Ofertou — Estúdio de ofertas" },
+      { property: "og:title", content: "Crismar Placas de Ofertas — Criação de placas de ofertas" },
       { property: "og:description", content: "Placas de ofertas personalizadas para seus produtos." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
