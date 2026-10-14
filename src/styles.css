@@ -70,6 +70,7 @@
 .canvas-area { background-color: var(--canvas); background-image: radial-gradient(var(--canvas-dot) .65px, transparent .65px); background-size: 13px 13px; min-height: 620px; padding: 36px 30px 67px; display: flex; justify-content: center; align-items: center; position: relative; overflow: auto; }
 .paper-preview { width: 348px; max-width: 100%; aspect-ratio: 600/848; box-shadow: var(--paper-shadow); flex-shrink: 0; }
 .paper-preview-compact { aspect-ratio: 3/2; }
+.paper-preview-large.minimal-sign { aspect-ratio: 1200/400; }
 .offer-sign { display: block; width: 100%; height: 100%; font-family: Arial, Helvetica, sans-serif; }
 .sign-yellow { fill: oklch(.956 .204 104); }
 .sign-red { fill: oklch(.586 .228 28); }
