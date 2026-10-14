@@ -68,9 +68,8 @@
 .preview-panel { min-width: 0; border: 1px solid var(--border); background: var(--card); border-radius: 8px; overflow: hidden; }
 .preview-heading { height: 55px; padding: 0 23px; display: flex; align-items: center; justify-content: space-between; font-size: 11px; }
 .canvas-area { background-color: var(--canvas); background-image: radial-gradient(var(--canvas-dot) .65px, transparent .65px); background-size: 13px 13px; min-height: 620px; padding: 36px 30px 67px; display: flex; justify-content: center; align-items: center; position: relative; overflow: auto; }
-.paper-preview { width: 348px; max-width: 100%; aspect-ratio: 600/848; box-shadow: var(--paper-shadow); flex-shrink: 0; }
+.paper-preview { width: 348px; max-width: 100%; aspect-ratio: 600/848; box-shadow: var(--paper-shadow); flex-shrink: 0; overflow: hidden; }
 .paper-preview-compact { aspect-ratio: 3/2; }
-.paper-preview-large.minimal-sign { aspect-ratio: 600/848; }
 .offer-sign { display: block; width: 100%; height: 100%; font-family: Arial, Helvetica, sans-serif; }
 .sign-yellow { fill: oklch(.956 .204 104); }
 .sign-red { fill: oklch(.586 .228 28); }
@@ -88,7 +87,7 @@
 .minimal-price { font-weight: 900; letter-spacing: 1px; }
 .sign-monochrome .minimal-paper { fill: #fff; }
 .sign-monochrome .minimal-ink { fill: #111; }
-.minimal-sign { width: 600px; height: 400px; }
+.minimal-sign { width: 100%; height: 100%; }
 .zoom-controls { position: absolute; bottom: 18px; left: 50%; transform: translateX(-50%); height: 35px; border: 1px solid var(--border); border-radius: 6px; background: var(--card); display: flex; align-items: center; }
 .export-bar { display: flex; align-items: center; justify-content: space-between; padding: 22px; gap: 14px; }
 .export-info, .export-actions { display: flex; align-items: center; gap: 10px; }
