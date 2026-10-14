@@ -7,20 +7,34 @@ import { initialOffer, type SignModel } from '@/lib/offer-sign';
 
 type BulkItem = { barcode: string; product: string; price: string };
 const emptyItem = (): BulkItem => ({ barcode: '', product: '', price: '' });
+const catalogKey = 'crismar-offer-catalog';
+
+function loadSavedCatalog(): CatalogItem[] {
+  try {
+    const saved = localStorage.getItem(catalogKey);
+    const parsed = saved ? JSON.parse(saved) : [];
+    return Array.isArray(parsed) ? parsed.filter(item => item && typeof item.barcode === 'string') : [];
+  } catch { return []; }
+}
+
+function saveCatalog(items: CatalogItem[]) {
+  localStorage.setItem(catalogKey, JSON.stringify(items));
+}
 
 export function BulkOfferSheet() {
   const [items, setItems] = useState(() => Array.from({ length: 16 }, emptyItem));
   const [colorMode, setColorMode] = useState<'color' | 'monochrome'>('color');
   const [model, setModel] = useState<SignModel>('minimal');
   const [sheetCount, setSheetCount] = useState<9 | 16>(16);
-  const [catalog, setCatalog] = useState<CatalogItem[]>([]);
+  const [catalog, setCatalog] = useState<CatalogItem[]>(loadSavedCatalog);
   const [catalogNotice, setCatalogNotice] = useState('');
 
   async function importCatalog(file: File) {
     try {
       const loaded = await readExcelCatalog(file);
+      saveCatalog(loaded);
       setCatalog(loaded);
-      setCatalogNotice(loaded.length ? `${loaded.length} produtos importados. Digite o código de barras para preencher.` : 'Nenhum produto encontrado. Confira as colunas B, D e F.');
+      setCatalogNotice(loaded.length ? `${loaded.length} produtos gravados. O arquivo anterior foi substituído.` : 'Nenhum produto encontrado. Confira as colunas B, D e F.');
     } catch (error) {
       setCatalog([]);
       setCatalogNotice(error instanceof Error ? `Erro ao importar: ${error.message}` : 'Não foi possível ler este arquivo Excel.');
