@@ -210,3 +210,5 @@ h1 { font-size: 27px; font-weight: 750; margin: 0; }
 .a4-sheet.sheet-count-9 { grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr); }
 
 .bulk-import-notice { margin: -10px 0 15px; color: var(--muted-foreground); font-size: 11px; }.bulk-import input[type=file] { width: 150px; font-size: 9px; }
+
+.bulk-import { display: inline-flex; align-items: center; justify-content: center; min-height: 31px; padding: 0 10px; border: 1px solid var(--border); border-radius: 5px; background: var(--card); color: var(--foreground); cursor: pointer; font-size: 10px; font-weight: 700; white-space: nowrap; }.bulk-import:hover { border-color: var(--primary); color: var(--primary); }.bulk-import input { display: none; }
