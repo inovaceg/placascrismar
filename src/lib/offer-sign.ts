@@ -1,5 +1,5 @@
 export type SignSize = 'compact' | 'small' | 'medium' | 'large';
-export type SignModel = 'classic' | 'hot';
+export type SignModel = 'classic' | 'hot' | 'minimal';
 export type SignColorMode = 'color' | 'monochrome';
 export interface OfferSignData {
   product: string;
