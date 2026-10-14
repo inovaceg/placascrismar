@@ -9,9 +9,9 @@ export function MinimalOfferSign({ data, miniature = false, ref }: { data: Offer
   return <svg ref={ref} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" role="img" aria-label={`Placa simples: ${data.product}, R$ ${data.price}`} className={`offer-sign minimal-sign ${data.colorMode === 'monochrome' ? 'sign-monochrome' : ''} ${miniature ? 'sign-miniature' : ''}`}>
     <rect width="600" height="400" className="minimal-paper" />
     {!miniature && <>
-      {productLines.map((line, index) => <text key={`product-${index}`} x="300" y={70 + index * (fontSize + 7)} textAnchor="middle" className="minimal-ink minimal-product" fontSize={fontSize}>{line}</text>)}
-      <text x="300" y="250" textAnchor="middle" className="minimal-ink minimal-price" fontSize={priceSize}>{whole}<tspan fontSize={priceSize * .48} dy={-priceSize * .28}>,{cents}</tspan></text>
-      <text x="300" y="330" textAnchor="middle" className="minimal-ink" fontSize="18">{data.unit}</text>
+      {productLines.map((line, index) => <text key={`product-${index}`} x="300" y={48 + index * (fontSize + 6)} textAnchor="middle" className="minimal-ink minimal-product" fontSize={fontSize}>{line}</text>)}
+            <text x="300" y="330" textAnchor="middle" className="minimal-ink minimal-price" fontSize={priceSize}>{whole}<tspan fontSize={priceSize * .48} dy={-priceSize * .28}>,{cents}</tspan></text>
+            <text x="300" y="372" textAnchor="middle" className="minimal-ink" fontSize="16">{data.unit}</text>
     </>}
   </svg>;
 }
