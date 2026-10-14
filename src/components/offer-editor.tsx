@@ -12,7 +12,7 @@ export function OfferEditor() {
   const [notice, setNotice] = useState('');
   const [exporting, setExporting] = useState(false);
   const [help, setHelp] = useState(false);
-  const [section, setSection] = useState<'single' | 'sheet'>('single');
+  const [section, setSection] = useState<'single' | 'sheet'>('sheet');
   const svgRef = useRef<SVGSVGElement>(null);
   const size = signSizes[data.size];
   function update<K extends keyof OfferSignData>(key: K, value: OfferSignData[K]) { setData(current => ({ ...current, [key]: value })); setNotice(''); }
