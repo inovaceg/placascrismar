@@ -30,9 +30,10 @@ export function BulkOfferSheet() {
   async function importCatalog(file: File) {
     try {
       const loaded = await readExcelCatalog(file);
-      await replaceCatalog(loaded);
-      setCatalog(loaded);
-      setCatalogNotice(loaded.length ? `${loaded.length} produtos gravados no banco. O arquivo anterior foi substituído.` : 'Nenhum produto encontrado. Confira as colunas B, D e F.');
+      const saved = await replaceCatalog(loaded);
+      const available = await loadCatalog();
+      setCatalog(available);
+      setCatalogNotice(saved ? `${available.length} de ${saved} produtos gravados e disponíveis.` : 'Nenhum produto encontrado. Confira as colunas B, D e F.');
     } catch (error) {
       setCatalog([]);
       setCatalogNotice(error instanceof Error ? `Erro ao importar: ${error.message}` : 'Não foi possível ler este arquivo Excel.');
