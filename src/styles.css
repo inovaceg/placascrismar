@@ -208,3 +208,5 @@ h1 { font-size: 27px; font-weight: 750; margin: 0; }
 .minimal-paper { fill: #f7f7f4; stroke: #b5b5b0; stroke-width: 3; }.minimal-ink { fill: #202124; font-family: Arial, Helvetica, sans-serif; }.minimal-product { font-weight: 800; letter-spacing: 1px; }.minimal-price { font-weight: 900; letter-spacing: 1px; }.sign-monochrome .minimal-paper { fill: #fff; }.sign-monochrome .minimal-ink { fill: #111; }
 
 .a4-sheet.sheet-count-9 { grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr); }
+
+.bulk-import-notice { margin: -10px 0 15px; color: var(--muted-foreground); font-size: 11px; }.bulk-import input[type=file] { width: 150px; font-size: 9px; }
