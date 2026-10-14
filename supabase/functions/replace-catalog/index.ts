@@ -26,8 +26,8 @@ serve(async (req) => {
     const items = [...unique.values()]
     console.log("[replace-catalog] replacing catalog", { count: items.length })
     const supabase = createClient(Deno.env.get("SUPABASE_URL") ?? "", Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "")
-    const { error: deleteError } = await supabase.from("catalog_items").delete().not("barcode", "is", null)
-    if (deleteError) throw deleteError
+    const { error: deleteError } = await supabase.from("catalog_items").delete().neq("barcode", "")
+        if (deleteError) throw deleteError
     for (let index = 0; index < items.length; index += 500) {
       const { error } = await supabase.from("catalog_items").insert(items.slice(index, index + 500))
       if (error) throw error
