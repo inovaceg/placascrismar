@@ -28,8 +28,8 @@ export const OfferSign = forwardRef<SVGSVGElement, { data: OfferSignData; miniat
       {descriptionLines.map((line, index) => <text key={`description-${index}`} x="300" y={productStart + 94 + lines.length * (productFont + 8) + index * (descriptionFontSize ? descriptionFontSize + 4 : 0)} textAnchor="middle" className="sign-ink" fontSize={descriptionFontSize ?? Math.min(30, 1080 / Math.max(data.description.length, 1))}>{line}</text>)}
       {data.previousPrice && <text x="300" y={hot ? 493 : 438} textAnchor="middle" className="sign-ink" fontSize="25">De R$ <tspan textDecoration="line-through">{data.previousPrice}</tspan> por</text>}
       {!hideCurrency && <text x={data.size === 'compact' ? 250 : 42} y={data.size === 'compact' ? 585 : hot ? 565 : 510} textAnchor={data.size === 'compact' ? 'middle' : undefined} className="sign-red-text sign-product" fontSize={data.size === 'compact' ? 32 : 37}>R$</text>}
-      <text x="300" y={data.size === 'compact' ? 650 : hot ? 644 : 589} textAnchor="middle" className="sign-red-text sign-price" fontSize={priceFont}>{whole}<tspan fontSize={priceFont * .55} dy={-priceFont * .29}>,{cents}</tspan></text>
-      <text x="300" y={data.size === 'compact' ? 710 : hot ? 696 : 641} textAnchor="middle" className="sign-ink" fontSize="25">/ {data.unit}</text>
+      <text x="300" y={data.size === 'compact' ? 650 : hot ? 669 : 589} textAnchor="middle" className="sign-red-text sign-price" fontSize={priceFont}>{whole}<tspan fontSize={priceFont * .55} dy={-priceFont * .29}>,{cents}</tspan></text>
+      <text x="300" y={data.size === 'compact' ? 710 : hot ? 721 : 641} textAnchor="middle" className="sign-ink" fontSize="25">/ {data.unit}</text>
     </>}
     {hot ? <path d="M0 744C100 826 204 829 288 790C380 747 420 706 493 738C535 756 553 774 600 740V848H0Z" className="sign-red" /> : <path d="M0 780C220 792 377 741 600 776V848H0Z" className="sign-red" />}
     {hot && <text x="555" y="813" textAnchor="end" className="sign-yellow-text hot-title" fontSize="37">Aproveite!</text>}
