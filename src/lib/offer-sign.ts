@@ -22,7 +22,7 @@ export const signSizes = {
 export const initialOffer: OfferSignData = {
   product: 'ARROZ BRANCO', description: 'Tipo 1 • Pacote de 5 kg', price: '19,90', unit: 'unidade',
   previousPrice: '24,90', footer: 'Oferta válida enquanto durarem os estoques.', showFooter: true,
-  model: 'classic', size: 'medium', colorMode: 'monochrome',
+  model: 'classic', size: 'large', colorMode: 'monochrome',
 };
 export function priceParts(value: string): [string, string] {
   const parsed = Number(value.replace(/\./g, '').replace(',', '.'));
