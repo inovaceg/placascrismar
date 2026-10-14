@@ -13,33 +13,33 @@ export function MinimalOfferSign({ data, miniature = false, ref, hideCurrency = 
   const showTwoUp = !miniature && data.size === 'large';
   
   if (showTwoUp) {
-    // Two-up layout for A4 sheet with 2 signs
-    return <svg ref={ref} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 400" role="img" aria-label={`Placa simples: ${data.product}, R$ ${data.price}`} className={`offer-sign minimal-sign ${data.colorMode === 'monochrome' ? 'sign-monochrome' : ''}`}>
-      <rect width="1200" height="400" className="minimal-paper" />
-      {/* Left sign */}
-      <rect x="20" y="20" width="560" height="360" className="minimal-paper" strokeWidth="2" strokeDasharray="4,4" />
-      {!miniature && <>
-        {productLines.map((line, index) => <text key={`product-left-${index}`} x="300" y={70 + index * (fontSize + 6)} textAnchor="middle" className="minimal-ink minimal-product" fontSize={fontSize}>{line}</text>)}
-        {descriptionLines.map((line, index) => <text key={`desc-left-${index}`} x="300" y={150 + index * (descSize + 4)} textAnchor="middle" className="minimal-ink" fontSize={descSize}>{line}</text>)}
-        <text x="300" y={descriptionLines.length > 0 ? 330 : 348} textAnchor="middle" className="minimal-ink minimal-price" fontSize={priceSize}>
-          {!hideCurrency && <tspan fontSize={priceSize * .32}>R$</tspan>}{whole}
-          <tspan fontSize={priceSize * .42} dy={-priceSize * .32}>,{cents}</tspan>
-        </text>
-        <text x="300" y={descriptionLines.length > 0 ? 370 : 386} textAnchor="middle" className="minimal-ink" fontSize="16">{data.unit}</text>
-      </>}
-      {/* Right sign */}
-      <rect x="620" y="20" width="560" height="360" className="minimal-paper" strokeWidth="2" strokeDasharray="4,4" />
-      {!miniature && <>
-        {productLines.map((line, index) => <text key={`product-right-${index}`} x="980" y={70 + index * (fontSize + 6)} textAnchor="middle" className="minimal-ink minimal-product" fontSize={fontSize}>{line}</text>)}
-        {descriptionLines.map((line, index) => <text key={`desc-right-${index}`} x="980" y={150 + index * (descSize + 4)} textAnchor="middle" className="minimal-ink" fontSize={descSize}>{line}</text>)}
-        <text x="980" y={descriptionLines.length > 0 ? 330 : 348} textAnchor="middle" className="minimal-ink minimal-price" fontSize={priceSize}>
-          {!hideCurrency && <tspan fontSize={priceSize * .32}>R$</tspan>}{whole}
-          <tspan fontSize={priceSize * .42} dy={-priceSize * .32}>,{cents}</tspan>
-        </text>
-        <text x="980" y={descriptionLines.length > 0 ? 370 : 386} textAnchor="middle" className="minimal-ink" fontSize="16">{data.unit}</text>
-      </>}
-      <text x="600" y="380" textAnchor="middle" className="minimal-ink" fontSize="14">Duas placas em uma folha A4</text>
-    </svg>;
+      // Two-up vertical layout for A4 sheet with 2 signs stacked
+      return <svg ref={ref} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 848" role="img" aria-label={`Placa simples: ${data.product}, R$ ${data.price}`} className={`offer-sign minimal-sign ${data.colorMode === 'monochrome' ? 'sign-monochrome' : ''}`}>
+        <rect width="600" height="848" className="minimal-paper" />
+        {/* Top sign */}
+        <rect x="20" y="20" width="560" height="360" className="minimal-paper" strokeWidth="2" strokeDasharray="4,4" />
+        {!miniature && <>
+          {productLines.map((line, index) => <text key={`product-top-${index}`} x="300" y={70 + index * (fontSize + 6)} textAnchor="middle" className="minimal-ink minimal-product" fontSize={fontSize}>{line}</text>)}
+          {descriptionLines.map((line, index) => <text key={`desc-top-${index}`} x="300" y={150 + index * (descSize + 4)} textAnchor="middle" className="minimal-ink" fontSize={descSize}>{line}</text>)}
+          <text x="300" y={descriptionLines.length > 0 ? 330 : 348} textAnchor="middle" className="minimal-ink minimal-price" fontSize={priceSize}>
+            {!hideCurrency && <tspan fontSize={priceSize * .32}>R$</tspan>}{whole}
+            <tspan fontSize={priceSize * .42} dy={-priceSize * .32}>,{cents}</tspan>
+          </text>
+          <text x="300" y={descriptionLines.length > 0 ? 370 : 386} textAnchor="middle" className="minimal-ink" fontSize="16">{data.unit}</text>
+        </>}
+        {/* Bottom sign */}
+        <rect x="20" y="440" width="560" height="360" className="minimal-paper" strokeWidth="2" strokeDasharray="4,4" />
+        {!miniature && <>
+          {productLines.map((line, index) => <text key={`product-bottom-${index}`} x="300" y={510 + index * (fontSize + 6)} textAnchor="middle" className="minimal-ink minimal-product" fontSize={fontSize}>{line}</text>)}
+          {descriptionLines.map((line, index) => <text key={`desc-bottom-${index}`} x="300" y={590 + index * (descSize + 4)} textAnchor="middle" className="minimal-ink" fontSize={descSize}>{line}</text>)}
+          <text x="300" y={descriptionLines.length > 0 ? 770 : 788} textAnchor="middle" className="minimal-ink minimal-price" fontSize={priceSize}>
+            {!hideCurrency && <tspan fontSize={priceSize * .32}>R$</tspan>}{whole}
+            <tspan fontSize={priceSize * .42} dy={-priceSize * .32}>,{cents}</tspan>
+          </text>
+          <text x="300" y={descriptionLines.length > 0 ? 790 : 808} textAnchor="middle" className="minimal-ink" fontSize="16">{data.unit}</text>
+        </>}
+        <text x="300" y="830" textAnchor="middle" className="minimal-ink" fontSize="14">Duas placas em uma folha A4</text>
+      </svg>;
   }
   
   // Single sign layout
