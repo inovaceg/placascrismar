@@ -23,7 +23,13 @@ export async function readExcelCatalog(file: File): Promise<CatalogItem[]> {
   const items: CatalogItem[] = [];
   for (const row of readText(sheet).matchAll(/<row[\s\S]*?<\/row>/g)) {
     const values: string[] = [];
-    for (const cell of row[0].matchAll(/<c\s+([^>]+)>([\s\S]*?)<\/c>/g)) { const attributes = cell[1] ?? ''; const reference = attributes.match(/r="([A-Z]+)\d+"/)?.[1]; const raw = cell[2]?.match(/<v>([\s\S]*?)<\/v>/)?.[1] ?? cell[2]?.match(/<t[^>]*>([\s\S]*?)<\/t>/)?.[1] ?? ''; const value = attributes.includes('t="s"') ? sharedValues[Number(raw)] ?? '' : raw; if (reference) values[columnNumber(reference)] = value; }
+    for (const cell of row[0].matchAll(/<c\s+([^>]+)>([\s\S]*?)<\/c>/g)) { const attributes = cell[1] ?? ''; const reference = attributes.match(/r="([A-Z]+)\d+"$/)?.[1]; const raw = cell[2]?.match(/<v>([\s\S]*?)<\/v>/)?.[1] ?? cell[2]?.match(/<t[^>]*>([\s\S]*?)<\/t>/)?.[1] ?? ''; const value = attributes.includes('t="s"') ? sharedValues[Number(raw)] ?? '' : raw; if (reference) values[columnNumber(reference)] = value; }
+    if (values[3]) {
+      let price = values[3];
+      if (price.includes('.') && !price.includes(',')) price = price.replace('.', ',');
+      else if (!price.includes(',')) price = price + ',00';
+      values[3] = price;
+    }
     if (values[1] || values[3] || values[5]) items.push({ barcode: values[5] ?? '', description: values[1] ?? '', price: values[3] ?? '' });
   }
   return items.filter(item => item.barcode);
