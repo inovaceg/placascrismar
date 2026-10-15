@@ -327,6 +327,7 @@
 .pos-receipt-backdrop { position:fixed; inset:0; z-index:120; display:grid; place-items:center; overflow:auto; padding:18px; background:rgb(0 0 0 / 70%); }
 .pos-receipt-dialog { width:min(100%,440px); max-height:94vh; overflow:auto; padding:16px; border-radius:10px; background:var(--card); box-shadow:var(--paper-shadow); }
 .pos-receipt-actions { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:12px; }
+.pos-receipt-actions kbd { padding:2px 5px; border:1px solid currentColor; border-radius:4px; font:inherit; font-size:10px; opacity:.8; }
 .pos-receipt { width:min(100%,300px); margin:0 auto; padding:18px 14px; background:#fff; color:#111; font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:11px; }
 .pos-receipt header,.pos-receipt footer { text-align:center; }
 .pos-receipt-company { display:block; font-size:14px; font-weight:900; }

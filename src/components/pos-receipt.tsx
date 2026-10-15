@@ -30,7 +30,7 @@ export function PosReceipt({ receipt, onClose }: { receipt: PosReceiptData; onCl
         <div className="pos-receipt-rule" />
         <footer>Obrigado pela preferência!</footer>
       </article>
-      <div className="pos-receipt-actions"><Button variant="outline" onClick={onClose}>Fechar</Button><Button onClick={() => window.print()}><Printer />Imprimir cupom</Button></div>
+      <div className="pos-receipt-actions"><Button variant="outline" onClick={onClose}>Próximo cupom <kbd>F9</kbd></Button><Button onClick={() => window.print()}><Printer />Imprimir cupom</Button></div>
     </section>
   </div>;
 }
