@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { loadCatalog } from '@/lib/catalog-store';
 import type { CatalogItem } from '@/lib/excel-catalog';
 
-type ChangedPrice = { barcode: string; description: string; currentPrice: string; newPrice: string };
+type ChangedPrice = { reducedCode: string; barcode: string; description: string; currentPrice: string; newPrice: string };
 
 function normalizedBarcode(value: string) {
   return value.trim().replace(/\s/g, '');
@@ -69,7 +69,7 @@ export function PriceInventory() {
     }
     setChanges(current => {
       const existing = current.findIndex(change => normalizedBarcode(change.barcode) === normalizedBarcode(item.barcode));
-      const updated = { barcode: item.barcode, description: item.description, currentPrice: item.price, newPrice: value };
+      const updated = { reducedCode: item.reducedCode, barcode: item.barcode, description: item.description, currentPrice: item.price, newPrice: value };
       if (existing < 0) return [...current, updated];
       return current.map((change, index) => index === existing ? updated : change);
     });
@@ -85,7 +85,7 @@ export function PriceInventory() {
   }
 
   function exportCsv() {
-    const rows = [['Código de barras', 'Produto', 'Preço atual', 'Novo preço'], ...changes.map(change => [change.barcode, change.description, change.currentPrice, change.newPrice])];
+    const rows = [['Código reduzido', 'Código de barras', 'Produto', 'Preço atual', 'Novo preço'], ...changes.map(change => [change.reducedCode, change.barcode, change.description, change.currentPrice, change.newPrice])];
     const csv = '\uFEFF' + rows.map(row => row.map(value => `"${value.replace(/"/g, '""')}"`).join(';')).join('\r\n');
     const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8' }));
     const link = document.createElement('a');
@@ -124,7 +124,7 @@ export function PriceInventory() {
       </section>
       <section className="inventory-report">
         <div className="inventory-report-heading"><div><strong>Relatório de alterações</strong><span>{changes.length} {changes.length === 1 ? 'produto registrado' : 'produtos registrados'}</span></div>{changes.length > 0 && <Button variant="outline" onClick={exportCsv}><Download size={16} />Exportar CSV</Button>}</div>
-        {changes.length ? <div className="inventory-table-wrap"><table className="inventory-table"><thead><tr><th>Código de barras</th><th>Produto</th><th>Preço atual</th><th>Novo preço</th><th><span className="sr-only">Ações</span></th></tr></thead><tbody>{changes.map(change => <tr key={change.barcode}><td data-label="Código de barras">{change.barcode}</td><td data-label="Produto">{change.description || '—'}</td><td data-label="Preço atual">R$ {change.currentPrice || '—'}</td><td data-label="Novo preço" className="inventory-new-value">R$ {change.newPrice}</td><td className="inventory-remove-cell"><button type="button" className="inventory-remove" aria-label={`Remover ${change.description || change.barcode}`} onClick={() => removeChange(change.barcode)}><Trash2 size={15} /></button></td></tr>)}</tbody></table></div> : <div className="inventory-empty"><FileDown size={24} /><strong>Nenhum preço registrado ainda</strong><span>Consulte um produto e informe o novo preço. As alterações aparecerão aqui.</span></div>}
+        {changes.length ? <div className="inventory-table-wrap"><table className="inventory-table"><thead><tr><th>Código reduzido</th><th>Código de barras</th><th>Produto</th><th>Preço atual</th><th>Novo preço</th><th><span className="sr-only">Ações</span></th></tr></thead><tbody>{changes.map(change => <tr key={change.barcode}><td data-label="Código reduzido">{change.reducedCode || '—'}</td><td data-label="Código de barras">{change.barcode}</td><td data-label="Produto">{change.description || '—'}</td><td data-label="Preço atual">R$ {change.currentPrice || '—'}</td><td data-label="Novo preço" className="inventory-new-value">R$ {change.newPrice}</td><td className="inventory-remove-cell"><button type="button" className="inventory-remove" aria-label={`Remover ${change.description || change.barcode}`} onClick={() => removeChange(change.barcode)}><Trash2 size={15} /></button></td></tr>)}</tbody></table></div> : <div className="inventory-empty"><FileDown size={24} /><strong>Nenhum preço registrado ainda</strong><span>Consulte um produto e informe o novo preço. As alterações aparecerão aqui.</span></div>}
       </section>
     </div>
   </section>;

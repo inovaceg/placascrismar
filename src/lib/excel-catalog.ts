@@ -1,4 +1,4 @@
-export type CatalogItem = { barcode: string; description: string; price: string };
+export type CatalogItem = { barcode: string; reducedCode: string; description: string; price: string };
 
 function readText(bytes: Uint8Array) { return new TextDecoder().decode(bytes); }
 function columnNumber(reference: string) { let value = 0; for (const char of reference) value = value * 26 + char.charCodeAt(0) - 64; return value - 1; }
@@ -51,8 +51,9 @@ export async function readExcelCatalog(file: File): Promise<CatalogItem[]> {
       const value = attributes.includes('t="s"') ? sharedValues[Number(raw)] ?? '' : decodeXml(raw);
       if (reference) values[columnNumber(reference)] = value;
     }
+    const reducedCode = formatBarcode(values[0] ?? '');
     const barcode = formatBarcode(values[5] ?? '');
-    if (barcode) items.push({ barcode, description: values[1] ?? '', price: formatPrice(values[3] ?? '') });
+    if (barcode) items.push({ barcode, reducedCode, description: values[1] ?? '', price: formatPrice(values[3] ?? '') });
   }
   return items;
 }

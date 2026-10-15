@@ -12,12 +12,13 @@ serve(async (req) => {
   try {
     const body = await req.json()
     const raw = Array.isArray(body?.items) ? body.items : []
-    const unique = new Map<string, { barcode: string; description: string; price: string }>()
+    const unique = new Map<string, { barcode: string; reduced_code: string; description: string; price: string }>()
     for (const item of raw) {
       const barcode = String(item?.barcode ?? "").trim().slice(0, 32)
       if (!barcode) continue
       unique.set(barcode, {
         barcode,
+        reduced_code: String(item?.reducedCode ?? "").trim().slice(0, 32),
         description: String(item?.description ?? "").slice(0, 200),
         price: String(item?.price ?? "").slice(0, 20),
       })
