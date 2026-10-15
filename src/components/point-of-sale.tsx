@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
 import { ArrowLeft, Barcode, Camera, Check, CirclePlus, FileDown, Minus, Pencil, Plus, Printer, Search, Trash2, X } from 'lucide-react';
 import { Link } from '@tanstack/react-router';
 import { Button } from '@/components/ui/button';
+import { PosReceipt, type PosReceiptData } from '@/components/pos-receipt';
 import { loadCatalog } from '@/lib/catalog-store';
 import { closePosDay, loadDailyReport, paymentMethods, savePosSale, type PaymentMethod, type PosDailyReport } from '@/lib/pos-store';
 import type { CatalogItem } from '@/lib/excel-catalog';
@@ -50,6 +51,7 @@ export function PointOfSale() {
   const [message, setMessage] = useState('Carregando catálogo de produtos…');
   const [view, setView] = useState<'sale' | 'daily'>('sale');
   const [checkoutOpen, setCheckoutOpen] = useState(false);
+  const [receipt, setReceipt] = useState<PosReceiptData | null>(null);
   const [payments, setPayments] = useState<PaymentDraft[]>([]);
   const [savingSale, setSavingSale] = useState(false);
   const [dailyDate, setDailyDate] = useState(localBusinessDate);
@@ -104,6 +106,12 @@ export function PointOfSale() {
     });
     return () => { active = false; };
   }, [view, dailyDate]);
+
+  useEffect(() => {
+    if (!receipt) return;
+    const timer = window.setTimeout(() => window.print(), 400);
+    return () => window.clearTimeout(timer);
+  }, [receipt]);
 
   useEffect(() => {
     if (!scannerOpen) return;
@@ -272,6 +280,13 @@ export function PointOfSale() {
         quantity: line.quantity,
         unitPrice: Math.round(line.unitPrice * 100) / 100,
       })), payments.map(payment => ({ method: payment.method, amount: (priceInCents(payment.amount) ?? 0) / 100 })));
+      setReceipt({
+        saleNumber: saved.saleNumber,
+        createdAt: new Date().toISOString(),
+        items: cart.map(({ barcode, description, quantity, unitPrice }) => ({ barcode, description, quantity, unitPrice })),
+        payments: payments.map(payment => ({ method: payment.method, amount: (priceInCents(payment.amount) ?? 0) / 100 })),
+        total,
+      });
       setCart([]);
       setCode('');
       setSelectedProduct(null);
@@ -345,6 +360,7 @@ export function PointOfSale() {
     </main>
     {checkoutOpen && <div className="barcode-scanner-backdrop" onClick={() => !savingSale && setCheckoutOpen(false)}><div className="pos-checkout-dialog" role="dialog" aria-modal="true" aria-labelledby="checkout-title" onClick={event => event.stopPropagation()}><div className="barcode-scanner-heading"><div><strong id="checkout-title">Fechar cupom</strong><span>Total do cupom: {currency.format(total)}</span></div><button type="button" className="inventory-remove" aria-label="Cancelar fechamento" onClick={() => setCheckoutOpen(false)} disabled={savingSale}><X size={19} /></button></div><form onSubmit={completeSale}><div className="pos-payment-rows">{payments.map((payment, index) => <div className="pos-payment-row" key={index}><label>Forma<select value={payment.method} onChange={event => setPayments(current => current.map((entry, row) => row === index ? { ...entry, method: event.target.value as PaymentMethod } : entry))}>{paymentMethods.map(method => <option key={method.value} value={method.value}>{method.label}</option>)}</select></label><label>Valor<input inputMode="decimal" value={payment.amount} onChange={event => { if (/^[\d.,]*$/.test(event.target.value)) setPayments(current => current.map((entry, row) => row === index ? { ...entry, amount: event.target.value } : entry)); }} /></label><button type="button" className="pos-payment-remove" aria-label="Remover forma de pagamento" disabled={payments.length === 1} onClick={() => setPayments(current => current.filter((_, row) => row !== index))}><Trash2 size={15} /></button></div>)}</div><Button type="button" variant="outline" className="pos-add-payment" onClick={addPayment}><CirclePlus />Adicionar outra forma</Button><div className="pos-payment-balance"><span>Pago: {currency.format(paymentCents / 100)}</span><strong>{paymentCents === totalCents ? 'Pagamento conferido' : `Falta: ${currency.format(Math.max(totalCents - paymentCents, 0) / 100)}`}</strong></div><Button type="submit" className="pos-confirm-sale" disabled={!canCompleteSale || savingSale}>{savingSale ? 'Gravando cupom…' : 'Gravar cupom e iniciar próximo'}</Button></form></div></div>}
     {scannerOpen && <div className="barcode-scanner-backdrop" onClick={() => setScannerOpen(false)}><div className="barcode-scanner-dialog" role="dialog" aria-modal="true" aria-labelledby="pos-scanner-title" onClick={event => event.stopPropagation()}><div className="barcode-scanner-heading"><div><strong id="pos-scanner-title">Ler código de barras</strong><span>{scannerMessage}</span></div><button type="button" className="inventory-remove" aria-label="Fechar leitor" onClick={() => setScannerOpen(false)}><X size={19} /></button></div><video ref={videoRef} className="barcode-scanner-video" autoPlay muted playsInline /><p className="barcode-scanner-help">Mantenha o código dentro da imagem e aguarde a leitura.</p><Button type="button" variant="outline" onClick={() => setScannerOpen(false)}>Fechar câmera</Button></div></div>}
+    {receipt && <PosReceipt receipt={receipt} onClose={() => setReceipt(null)} />}
   </div>;
 }
 

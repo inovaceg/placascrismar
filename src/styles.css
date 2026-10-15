@@ -324,3 +324,28 @@
 .pos-cart-lines { flex:1; min-height:0; max-height:none; overflow-y:auto; overscroll-behavior:contain; }
 @media(max-width:800px) { .pos-workspace { grid-template-rows:minmax(0,42vh) minmax(0,1fr); }.pos-add-card { max-height:42vh; }.pos-cart { min-height:0; } }
 @media(max-width:520px) { .pos-main { padding:16px 0 10px; }.pos-title { margin-bottom:12px; }.pos-title p { font-size:11px; }.pos-workspace { grid-template-rows:minmax(0,35vh) minmax(0,1fr); gap:10px; }.pos-add-card { max-height:35vh; } }
+.pos-receipt-backdrop { position:fixed; inset:0; z-index:120; display:grid; place-items:center; overflow:auto; padding:18px; background:rgb(0 0 0 / 70%); }
+.pos-receipt-dialog { width:min(100%,440px); max-height:94vh; overflow:auto; padding:16px; border-radius:10px; background:var(--card); box-shadow:var(--paper-shadow); }
+.pos-receipt-actions { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:12px; }
+.pos-receipt { width:min(100%,300px); margin:0 auto; padding:18px 14px; background:#fff; color:#111; font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:11px; }
+.pos-receipt header,.pos-receipt footer { text-align:center; }
+.pos-receipt header h2 { margin:0 0 6px; font-size:14px; }
+.pos-receipt header p { margin:3px 0; }
+.pos-receipt-rule { margin:10px 0; border-top:1px dashed #333; }
+.pos-receipt-items { display:grid; gap:8px; }
+.pos-receipt-item>strong { display:block; margin-bottom:3px; }
+.pos-receipt-item>div,.pos-receipt-total,.pos-receipt-payments>div { display:flex; justify-content:space-between; gap:10px; }
+.pos-receipt-total { align-items:center; font-size:14px; font-weight:800; }
+.pos-receipt-payments { display:grid; gap:5px; margin-top:10px; }
+.pos-receipt-payments>strong { margin-bottom:3px; }
+.pos-receipt footer { margin-top:12px; }
+@media print {
+  @page { size:80mm auto; margin:3mm; }
+  body:has(.pos-receipt) { margin:0; background:#fff; }
+  body:has(.pos-receipt) .pos-page { display:block; width:auto; height:auto; min-height:0; overflow:visible; }
+  body:has(.pos-receipt) .pos-page>*:not(.pos-receipt-backdrop) { display:none !important; }
+  body:has(.pos-receipt) .pos-receipt-backdrop { position:static; display:block; overflow:visible; padding:0; background:#fff; }
+  body:has(.pos-receipt) .pos-receipt-dialog { width:74mm; max-height:none; overflow:visible; margin:0; padding:0; border:0; border-radius:0; box-shadow:none; background:#fff; }
+  body:has(.pos-receipt) .pos-receipt-actions { display:none !important; }
+  body:has(.pos-receipt) .pos-receipt { width:100%; padding:0; font-size:10px; }
+}
