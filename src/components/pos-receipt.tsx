@@ -7,6 +7,8 @@ export type PosReceiptData = {
   createdAt: string;
   items: { barcode: string; description: string; quantity: number; unitPrice: number }[];
   payments: PosPayment[];
+  subtotal: number;
+  discount: number;
   total: number;
 };
 
@@ -25,6 +27,7 @@ export function PosReceipt({ receipt, onClose }: { receipt: PosReceiptData; onCl
         <div className="pos-receipt-rule" />
         <div className="pos-receipt-items">{receipt.items.map((item, index) => <div className="pos-receipt-item" key={`${item.barcode}-${index}`}><strong>{item.description || item.barcode}</strong><div><span>{item.quantity} × {currency.format(item.unitPrice)}</span><b>{currency.format(item.quantity * item.unitPrice)}</b></div></div>)}</div>
         <div className="pos-receipt-rule" />
+        <div className="pos-receipt-pricing"><div><span>Subtotal</span><b>{currency.format(receipt.subtotal)}</b></div>{receipt.discount > 0 && <div><span>Desconto</span><b>- {currency.format(receipt.discount)}</b></div>}</div>
         <div className="pos-receipt-total"><span>TOTAL</span><strong>{currency.format(receipt.total)}</strong></div>
         <div className="pos-receipt-payments"><strong>FORMA DE PAGAMENTO</strong>{receipt.payments.map((payment, index) => <div key={`${payment.method}-${index}`}><span>{paymentLabel(payment.method)}</span><b>{currency.format(payment.amount)}</b></div>)}</div>
         <div className="pos-receipt-rule" />

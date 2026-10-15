@@ -53,6 +53,7 @@ export function PointOfSale() {
   const [checkoutOpen, setCheckoutOpen] = useState(false);
   const [receipt, setReceipt] = useState<PosReceiptData | null>(null);
   const [payments, setPayments] = useState<PaymentDraft[]>([]);
+  const [discount, setDiscount] = useState('0,00');
   const [savingSale, setSavingSale] = useState(false);
   const [dailyDate, setDailyDate] = useState(localBusinessDate);
   const [dailyReport, setDailyReport] = useState<PosDailyReport | null>(null);
@@ -67,9 +68,12 @@ export function PointOfSale() {
   const productByBarcode = useMemo(() => new Map(catalog.map(item => [cleanCode(item.barcode), item])), [catalog]);
   const totalCents = cart.reduce((sum, line) => sum + Math.round(line.unitPrice * 100) * line.quantity, 0);
   const total = totalCents / 100;
+  const discountCents = priceInCents(discount);
+  const validDiscount = discountCents !== null && discountCents < totalCents;
+  const saleTotalCents = validDiscount ? totalCents - discountCents : totalCents;
   const totalUnits = cart.reduce((sum, line) => sum + line.quantity, 0);
   const paymentCents = payments.reduce((sum, payment) => sum + (priceInCents(payment.amount) ?? 0), 0);
-  const canCompleteSale = payments.length > 0 && payments.every(payment => (priceInCents(payment.amount) ?? 0) > 0) && paymentCents === totalCents;
+  const canCompleteSale = validDiscount && payments.length > 0 && payments.every(payment => (priceInCents(payment.amount) ?? 0) > 0) && paymentCents === saleTotalCents;
 
   useEffect(() => {
     if (selectedProduct) {
@@ -240,6 +244,7 @@ export function PointOfSale() {
   }
 
   function openCheckout() {
+    setDiscount('0,00');
     setPayments([{ method: 'cash', amount: moneyInput(totalCents) }]);
     setCheckoutOpen(true);
   }
@@ -274,7 +279,7 @@ export function PointOfSale() {
   }, [view, receipt, checkoutOpen, savingSale, cart.length, canCompleteSale, openCheckout, closeReceipt]);
 
   function addPayment() {
-    const remaining = Math.max(0, totalCents - paymentCents);
+    const remaining = Math.max(0, saleTotalCents - paymentCents);
     setPayments(current => [...current, { method: 'pix', amount: moneyInput(remaining) }]);
   }
 
@@ -289,13 +294,15 @@ export function PointOfSale() {
         description: line.description,
         quantity: line.quantity,
         unitPrice: Math.round(line.unitPrice * 100) / 100,
-      })), payments.map(payment => ({ method: payment.method, amount: (priceInCents(payment.amount) ?? 0) / 100 })));
+      })), payments.map(payment => ({ method: payment.method, amount: (priceInCents(payment.amount) ?? 0) / 100 })), (discountCents ?? 0) / 100);
       setReceipt({
         saleNumber: saved.saleNumber,
         createdAt: new Date().toISOString(),
         items: cart.map(({ barcode, description, quantity, unitPrice }) => ({ barcode, description, quantity, unitPrice })),
         payments: payments.map(payment => ({ method: payment.method, amount: (priceInCents(payment.amount) ?? 0) / 100 })),
-        total,
+        subtotal: total,
+        discount: (discountCents ?? 0) / 100,
+        total: saleTotalCents / 100,
       });
       setCart([]);
       setCode('');
@@ -368,7 +375,7 @@ export function PointOfSale() {
         </>}
       </section>}
     </main>
-    {checkoutOpen && <div className="barcode-scanner-backdrop" onClick={() => !savingSale && setCheckoutOpen(false)}><div className="pos-checkout-dialog" role="dialog" aria-modal="true" aria-labelledby="checkout-title" onClick={event => event.stopPropagation()}><div className="barcode-scanner-heading"><div><strong id="checkout-title">Fechar cupom</strong><span>Total do cupom: {currency.format(total)}</span></div><button type="button" className="inventory-remove" aria-label="Cancelar fechamento" onClick={() => setCheckoutOpen(false)} disabled={savingSale}><X size={19} /></button></div><form onSubmit={completeSale}><div className="pos-payment-rows">{payments.map((payment, index) => <div className="pos-payment-row" key={index}><label>Forma<select value={payment.method} onChange={event => setPayments(current => current.map((entry, row) => row === index ? { ...entry, method: event.target.value as PaymentMethod } : entry))}>{paymentMethods.map(method => <option key={method.value} value={method.value}>{method.label}</option>)}</select></label><label>Valor<input inputMode="decimal" value={payment.amount} onChange={event => { if (/^[\d.,]*$/.test(event.target.value)) setPayments(current => current.map((entry, row) => row === index ? { ...entry, amount: event.target.value } : entry)); }} /></label><button type="button" className="pos-payment-remove" aria-label="Remover forma de pagamento" disabled={payments.length === 1} onClick={() => setPayments(current => current.filter((_, row) => row !== index))}><Trash2 size={15} /></button></div>)}</div><Button type="button" variant="outline" className="pos-add-payment" onClick={addPayment}><CirclePlus />Adicionar outra forma</Button><div className="pos-payment-balance"><span>Pago: {currency.format(paymentCents / 100)}</span><strong>{paymentCents === totalCents ? 'Pagamento conferido' : `Falta: ${currency.format(Math.max(totalCents - paymentCents, 0) / 100)}`}</strong></div><Button type="submit" className="pos-confirm-sale" disabled={!canCompleteSale || savingSale}>{savingSale ? 'Gravando cupom…' : 'Gravar cupom e iniciar próximo'}</Button></form></div></div>}
+    {checkoutOpen && <div className="barcode-scanner-backdrop" onClick={() => !savingSale && setCheckoutOpen(false)}><div className="pos-checkout-dialog" role="dialog" aria-modal="true" aria-labelledby="checkout-title" onClick={event => event.stopPropagation()}><div className="barcode-scanner-heading"><div><strong id="checkout-title">Fechar cupom</strong><span>Total a pagar: {currency.format(saleTotalCents / 100)}</span></div><button type="button" className="inventory-remove" aria-label="Cancelar fechamento" onClick={() => setCheckoutOpen(false)} disabled={savingSale}><X size={19} /></button></div><form onSubmit={completeSale}><div className="pos-checkout-totals"><div><span>Subtotal</span><strong>{currency.format(total)}</strong></div><label htmlFor="pos-discount">Desconto no cupom (R$)<input id="pos-discount" inputMode="decimal" value={discount} onChange={event => { const value = event.target.value; if (/^[\d.,]*$/.test(value)) { setDiscount(value); if (payments.length === 1) { const amountCents = priceInCents(value) ?? 0; setPayments(current => current.length === 1 ? [{ ...current[0], amount: moneyInput(Math.max(0, totalCents - amountCents)) }] : current); } } }} /></label><div className="pos-checkout-net"><span>Total com desconto</span><strong>{currency.format(saleTotalCents / 100)}</strong></div></div><div className="pos-payment-rows">{payments.map((payment, index) => <div className="pos-payment-row" key={index}><label>Forma<select value={payment.method} onChange={event => setPayments(current => current.map((entry, row) => row === index ? { ...entry, method: event.target.value as PaymentMethod } : entry))}>{paymentMethods.map(method => <option key={method.value} value={method.value}>{method.label}</option>)}</select></label><label>Valor<input inputMode="decimal" value={payment.amount} onChange={event => { if (/^[\d.,]*$/.test(event.target.value)) setPayments(current => current.map((entry, row) => row === index ? { ...entry, amount: event.target.value } : entry)); }} /></label><button type="button" className="pos-payment-remove" aria-label="Remover forma de pagamento" disabled={payments.length === 1} onClick={() => setPayments(current => current.filter((_, row) => row !== index))}><Trash2 size={15} /></button></div>)}</div><Button type="button" variant="outline" className="pos-add-payment" onClick={addPayment}><CirclePlus />Adicionar outra forma</Button><div className="pos-payment-balance"><span>Pago: {currency.format(paymentCents / 100)}</span><strong>{paymentCents === saleTotalCents ? 'Pagamento conferido' : paymentCents > saleTotalCents ? `Excedente: ${currency.format((paymentCents - saleTotalCents) / 100)}` : `Falta: ${currency.format((saleTotalCents - paymentCents) / 100)}`}</strong></div><Button type="submit" className="pos-confirm-sale" disabled={!canCompleteSale || savingSale}>{savingSale ? 'Gravando cupom…' : 'Gravar cupom e iniciar próximo'}</Button></form></div></div>}
     {scannerOpen && <div className="barcode-scanner-backdrop" onClick={() => setScannerOpen(false)}><div className="barcode-scanner-dialog" role="dialog" aria-modal="true" aria-labelledby="pos-scanner-title" onClick={event => event.stopPropagation()}><div className="barcode-scanner-heading"><div><strong id="pos-scanner-title">Ler código de barras</strong><span>{scannerMessage}</span></div><button type="button" className="inventory-remove" aria-label="Fechar leitor" onClick={() => setScannerOpen(false)}><X size={19} /></button></div><video ref={videoRef} className="barcode-scanner-video" autoPlay muted playsInline /><p className="barcode-scanner-help">Mantenha o código dentro da imagem e aguarde a leitura.</p><Button type="button" variant="outline" onClick={() => setScannerOpen(false)}>Fechar câmera</Button></div></div>}
     {receipt && <PosReceipt receipt={receipt} onClose={closeReceipt} />}
   </div>;

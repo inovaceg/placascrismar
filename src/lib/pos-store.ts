@@ -10,7 +10,7 @@ export const paymentMethods: { value: PaymentMethod; label: string }[] = [
 
 export type PosSaleItem = { barcode: string; reducedCode: string; description: string; quantity: number; unitPrice: number; lineTotal: number };
 export type PosPayment = { method: PaymentMethod; amount: number };
-export type PosSale = { id: string; saleNumber: number; createdAt: string; total: number; items: PosSaleItem[]; payments: PosPayment[] };
+export type PosSale = { id: string; saleNumber: number; createdAt: string; subtotal: number; discount: number; total: number; items: PosSaleItem[]; payments: PosPayment[] };
 export type PosDayClosure = { closedAt: string; total: number; couponCount: number; paymentTotals: Record<string, number> };
 export type PosDailyReport = { businessDate: string; total: number; couponCount: number; paymentTotals: Record<string, number>; sales: PosSale[]; closure: PosDayClosure | null };
 
@@ -30,11 +30,12 @@ async function callFunction<T>(name: string, body: unknown): Promise<T> {
   return await response.json() as T;
 }
 
-export function savePosSale(businessDate: string, items: Omit<PosSaleItem, 'lineTotal'>[], payments: PosPayment[]) {
-  return callFunction<{ id: string; saleNumber: number; businessDate: string; total: number }>('create_pos_sale', {
+export function savePosSale(businessDate: string, items: Omit<PosSaleItem, 'lineTotal'>[], payments: PosPayment[], discount: number) {
+  return callFunction<{ id: string; saleNumber: number; businessDate: string; subtotal: number; discount: number; total: number }>('create_pos_sale', {
     p_business_date: businessDate,
     p_items: items,
     p_payments: payments,
+    p_discount: discount,
   });
 }
 
