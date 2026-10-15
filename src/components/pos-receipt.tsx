@@ -21,7 +21,7 @@ export function PosReceipt({ receipt, onClose }: { receipt: PosReceiptData; onCl
     <section className="pos-receipt-dialog" role="dialog" aria-modal="true" aria-labelledby="pos-receipt-title">
       <div className="pos-receipt-actions"><strong>Cupom pronto para impressão</strong><Button variant="ghost" size="icon" aria-label="Fechar comprovante" onClick={onClose}><X /></Button></div>
       <article className="pos-receipt">
-        <header><h2 id="pos-receipt-title">COMPROVANTE DE VENDA</h2><p>DOCUMENTO NÃO FISCAL</p><p>Cupom nº {receipt.saleNumber}</p><p>{new Date(receipt.createdAt).toLocaleString('pt-BR')}</p></header>
+        <header><strong className="pos-receipt-company">Comercial Crismar Ltda</strong><p className="pos-receipt-address">Avenida Governador Valadares, 546<br />Manoel Honório - Juiz de Fora - MG<br />CEP 36045-000</p><h2 id="pos-receipt-title">ORÇAMENTO DE VENDA</h2><p>DOCUMENTO NÃO FISCAL</p><p>Cupom nº {receipt.saleNumber}</p><p>{new Date(receipt.createdAt).toLocaleString('pt-BR')}</p></header>
         <div className="pos-receipt-rule" />
         <div className="pos-receipt-items">{receipt.items.map((item, index) => <div className="pos-receipt-item" key={`${item.barcode}-${index}`}><strong>{item.description || item.barcode}</strong><div><span>{item.quantity} × {currency.format(item.unitPrice)}</span><b>{currency.format(item.quantity * item.unitPrice)}</b></div></div>)}</div>
         <div className="pos-receipt-rule" />

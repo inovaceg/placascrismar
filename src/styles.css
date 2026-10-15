@@ -329,7 +329,9 @@
 .pos-receipt-actions { display:flex; align-items:center; justify-content:space-between; gap:10px; margin-bottom:12px; }
 .pos-receipt { width:min(100%,300px); margin:0 auto; padding:18px 14px; background:#fff; color:#111; font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:11px; }
 .pos-receipt header,.pos-receipt footer { text-align:center; }
-.pos-receipt header h2 { margin:0 0 6px; font-size:14px; }
+.pos-receipt-company { display:block; font-size:14px; font-weight:900; }
+.pos-receipt-address { margin:5px 0 10px !important; line-height:1.4; }
+.pos-receipt header h2 { margin:10px 0 6px; font-size:14px; font-weight:900; }
 .pos-receipt header p { margin:3px 0; }
 .pos-receipt-rule { margin:10px 0; border-top:1px dashed #333; }
 .pos-receipt-items { display:grid; gap:8px; }
