@@ -272,6 +272,46 @@
 .pos-grand-total strong { color:var(--primary); font-size:clamp(24px,5vw,34px); font-weight:900; white-space:nowrap; }
 @media(max-width:800px) { .pos-workspace { grid-template-columns:1fr; }.pos-cart-lines { max-height:unset; } }
 @media(max-width:520px) { .pos-header { padding:0 14px; gap:12px; }.pos-main { padding-top:24px; }.pos-title h1 { font-size:23px; }.pos-cart-heading { align-items:flex-start; }.pos-cart-heading button { padding-inline:9px; font-size:11px; }.pos-cart-line { grid-template-columns:minmax(0,1fr) auto; gap:8px 10px; }.pos-line-quantity { grid-row:2; }.pos-line-total { grid-column:2; grid-row:2; }.pos-remove-line { grid-column:2; grid-row:1; justify-self:end; }.pos-barcode-field { grid-template-columns:1fr; }.pos-barcode-field button { width:100%; }.pos-quantity-row { grid-template-columns:80px minmax(0,1fr); }.pos-quantity-row button { padding-inline:8px; font-size:11px; } }
+.pos-tabs { display:flex; flex:0 0 auto; gap:8px; margin:-6px 0 14px; border-bottom:1px solid var(--border); }
+.pos-tabs button { padding:9px 14px; border:0; border-bottom:2px solid transparent; background:transparent; color:var(--muted-foreground); font-size:12px; font-weight:700; cursor:pointer; }
+.pos-tabs button.active { color:var(--primary); border-bottom-color:var(--primary); }
+.pos-grand-total { flex-wrap:wrap; }
+.pos-daily-report { flex:1; min-height:0; overflow:auto; border:1px solid var(--border); border-radius:9px; background:var(--card); padding:18px; }
+.pos-report-toolbar { display:flex; flex-wrap:wrap; align-items:end; justify-content:flex-end; gap:10px; margin-bottom:16px; }
+.pos-report-toolbar label { display:grid; gap:5px; margin-right:auto; color:var(--muted-foreground); font-size:10px; font-weight:700; }
+.pos-report-toolbar input { height:36px; padding:0 9px; border:1px solid var(--border); border-radius:5px; background:var(--background); color:var(--foreground); }
+.pos-report-message { margin:0 0 12px; color:var(--success); font-size:11px; }
+.pos-report-summary { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; }
+.pos-report-summary article { display:grid; gap:7px; padding:16px; border:1px solid var(--border); border-radius:7px; background:var(--background); }
+.pos-report-summary span { color:var(--muted-foreground); font-size:10px; }
+.pos-report-summary strong { font-size:20px; }
+.pos-payment-summary,.pos-daily-coupons { margin-top:18px; padding:16px; border:1px solid var(--border); border-radius:7px; }
+.pos-payment-summary h2,.pos-daily-coupons h2 { margin:0 0 12px; font-size:13px; }
+.pos-payment-summary>div { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; }
+.pos-payment-summary>div>div { display:flex; justify-content:space-between; gap:8px; padding:9px; border-radius:5px; background:var(--background); font-size:10px; }
+.pos-payment-summary strong { white-space:nowrap; }
+.pos-closed-notice { margin:12px 0 0; color:var(--success); font-size:11px; }
+.pos-coupon { border-top:1px solid var(--border); }
+.pos-coupon summary { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:12px 4px; cursor:pointer; font-size:11px; }
+.pos-coupon summary strong { color:var(--primary); white-space:nowrap; }
+.pos-coupon-content { display:grid; grid-template-columns:1fr 1fr; gap:16px; padding:4px 8px 14px; }
+.pos-coupon-lines,.pos-coupon-payments { display:grid; align-content:start; gap:7px; }
+.pos-coupon-lines>div,.pos-coupon-payments>div { display:flex; justify-content:space-between; gap:10px; font-size:10px; }
+.pos-coupon-payments>strong { font-size:10px; }
+.pos-checkout-dialog { width:min(100%,540px); max-height:90vh; overflow:auto; display:flex; flex-direction:column; gap:16px; padding:20px; border-radius:10px; background:var(--card); box-shadow:var(--paper-shadow); }
+.pos-checkout-dialog>form { display:grid; gap:14px; }
+.pos-payment-rows { display:grid; gap:10px; }
+.pos-payment-row { display:grid; grid-template-columns:minmax(0,1fr) minmax(100px,.7fr) 32px; align-items:end; gap:9px; }
+.pos-payment-row label { display:grid; gap:5px; color:var(--muted-foreground); font-size:10px; font-weight:700; }
+.pos-payment-row select,.pos-payment-row input { width:100%; min-width:0; height:38px; padding:0 8px; border:1px solid var(--border); border-radius:5px; background:var(--background); color:var(--foreground); font:inherit; font-size:11px; }
+.pos-payment-remove { display:grid; place-items:center; width:32px; height:34px; border:0; border-radius:5px; background:var(--accent); color:var(--primary); cursor:pointer; }
+.pos-payment-remove:disabled { opacity:.4; cursor:not-allowed; }
+.pos-add-payment { justify-self:start; }
+.pos-payment-balance { display:flex; justify-content:space-between; gap:10px; padding:12px; border-radius:6px; background:var(--background); font-size:11px; }
+.pos-payment-balance strong { text-align:right; }
+.pos-confirm-sale { width:100%; }
+@media(max-width:650px) { .pos-daily-report { padding:12px; }.pos-report-toolbar { justify-content:stretch; }.pos-report-toolbar>* { flex:1 1 100%; }.pos-report-summary { grid-template-columns:1fr; gap:7px; }.pos-report-summary article { grid-template-columns:1fr auto; align-items:center; padding:11px; }.pos-report-summary strong { font-size:16px; }.pos-payment-summary>div { grid-template-columns:1fr 1fr; }.pos-coupon-content { grid-template-columns:1fr; }.pos-report-toolbar label { margin-right:0; }.pos-payment-row { grid-template-columns:minmax(0,1fr) minmax(80px,.8fr) 30px; }.pos-payment-row select { font-size:10px; } }
+@media print { body:has(.pos-daily-report) .pos-page { height:auto; min-height:0; overflow:visible; display:block; }.pos-header,.pos-tabs,.pos-title p,.pos-report-toolbar,.pos-checkout-dialog,.barcode-scanner-backdrop { display:none !important; } body:has(.pos-daily-report) .pos-main { width:100%; height:auto; overflow:visible; padding:0; display:block; }.pos-title { margin:0 0 12px; }.pos-workspace { display:none !important; }.pos-daily-report { overflow:visible; border:0; padding:0; }.pos-report-summary { grid-template-columns:repeat(3,1fr); }.pos-payment-summary>div { grid-template-columns:repeat(3,1fr); }.pos-coupon-content { display:grid !important; } }
 .pos-page { height:100dvh; display:flex; flex-direction:column; overflow:hidden; }
 .pos-header { flex:0 0 66px; }
 .pos-main { flex:1; min-height:0; display:flex; flex-direction:column; overflow:hidden; padding:24px 0 16px; }

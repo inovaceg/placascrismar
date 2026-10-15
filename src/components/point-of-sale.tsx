@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
-import { ArrowLeft, Barcode, Camera, Check, CirclePlus, FileDown, Minus, Pencil, Plus, Search, Trash2, X } from 'lucide-react';
+import { useEffect, useMemo, useRef, useState, type FormEvent } from 'react';
+import { ArrowLeft, Barcode, Camera, Check, CirclePlus, FileDown, Minus, Pencil, Plus, Printer, Search, Trash2, X } from 'lucide-react';
 import { Link } from '@tanstack/react-router';
 import { Button } from '@/components/ui/button';
 import { loadCatalog } from '@/lib/catalog-store';
@@ -27,11 +27,11 @@ function localBusinessDate() {
   return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
 }
 
-function moneyInput(cents: number) {
-  return (cents / 100).toFixed(2).replace('.', ',');
+function moneyInput(valueInCents: number) {
+  return (valueInCents / 100).toFixed(2).replace('.', ',');
 }
 
-function cents(value: string) {
+function priceInCents(value: string) {
   const price = parsePrice(value);
   return price === null ? null : Math.round(price * 100);
 }
@@ -63,8 +63,11 @@ export function PointOfSale() {
   const quantityRef = useRef<HTMLInputElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const productByBarcode = useMemo(() => new Map(catalog.map(item => [cleanCode(item.barcode), item])), [catalog]);
-  const total = cart.reduce((sum, line) => sum + line.unitPrice * line.quantity, 0);
+  const totalCents = cart.reduce((sum, line) => sum + Math.round(line.unitPrice * 100) * line.quantity, 0);
+  const total = totalCents / 100;
   const totalUnits = cart.reduce((sum, line) => sum + line.quantity, 0);
+  const paymentCents = payments.reduce((sum, payment) => sum + (priceInCents(payment.amount) ?? 0), 0);
+  const canCompleteSale = payments.length > 0 && payments.every(payment => (priceInCents(payment.amount) ?? 0) > 0) && paymentCents === totalCents;
 
   useEffect(() => {
     if (selectedProduct) {
@@ -86,6 +89,21 @@ export function PointOfSale() {
     });
     return () => { active = false; };
   }, []);
+
+  useEffect(() => {
+    if (view !== 'daily') return;
+    let active = true;
+    setReportLoading(true);
+    setReportMessage('');
+    loadDailyReport(dailyDate).then(report => {
+      if (active) setDailyReport(report);
+    }).catch(() => {
+      if (active) setReportMessage('Não foi possível carregar o relatório diário. Confira sua conexão e tente novamente.');
+    }).finally(() => {
+      if (active) setReportLoading(false);
+    });
+    return () => { active = false; };
+  }, [view, dailyDate]);
 
   useEffect(() => {
     if (!scannerOpen) return;
@@ -213,6 +231,58 @@ export function PointOfSale() {
     setMessage('Quantidade do item atualizada.');
   }
 
+  function openCheckout() {
+    setPayments([{ method: 'cash', amount: moneyInput(totalCents) }]);
+    setCheckoutOpen(true);
+  }
+
+  function addPayment() {
+    const remaining = Math.max(0, totalCents - paymentCents);
+    setPayments(current => [...current, { method: 'pix', amount: moneyInput(remaining) }]);
+  }
+
+  async function completeSale(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!canCompleteSale || savingSale || cart.length === 0) return;
+    setSavingSale(true);
+    try {
+      const saved = await savePosSale(localBusinessDate(), cart.map(line => ({
+        barcode: line.barcode,
+        reducedCode: line.reducedCode,
+        description: line.description,
+        quantity: line.quantity,
+        unitPrice: Math.round(line.unitPrice * 100) / 100,
+      })), payments.map(payment => ({ method: payment.method, amount: (priceInCents(payment.amount) ?? 0) / 100 })));
+      setCart([]);
+      setCode('');
+      setSelectedProduct(null);
+      setQuantity('1');
+      setPayments([]);
+      setCheckoutOpen(false);
+      setMessage(`Cupom nº ${saved.saleNumber} gravado. Pronto para o próximo cupom.`);
+      if (view === 'daily' && dailyDate === localBusinessDate()) setDailyReport(await loadDailyReport(dailyDate));
+      barcodeRef.current?.focus();
+    } catch {
+      setMessage('Não foi possível gravar o cupom. Verifique sua conexão; os itens continuam no carrinho para tentar novamente.');
+    } finally {
+      setSavingSale(false);
+    }
+  }
+
+  async function closeDay() {
+    setClosingDay(true);
+    setReportMessage('');
+    try {
+      await closePosDay(dailyDate);
+      setDailyReport(await loadDailyReport(dailyDate));
+      setReportMessage('Fechamento do dia gravado com sucesso.');
+    } catch {
+      setReportMessage('Não foi possível fechar o caixa. Verifique sua conexão e tente novamente.');
+    } finally {
+      setClosingDay(false);
+    }
+  }
+
   function clearSale() {
     setCart([]);
     setCode('');
@@ -225,8 +295,9 @@ export function PointOfSale() {
   return <div className="pos-page">
     <header className="pos-header"><Link to="/" className="pos-back"><ArrowLeft size={18} />Voltar ao estúdio</Link><span className="pos-brand">PDV · Caixa</span><span className="pos-catalog-state">{loading ? 'Carregando catálogo…' : `${catalog.length.toLocaleString('pt-BR')} produtos`}</span></header>
     <main className="pos-main">
-      <div className="pos-title"><span className="pos-title-icon"><Barcode size={24} /></span><div><h1>Ponto de venda</h1><p>Leia o código, informe as unidades e acompanhe o total da venda.</p></div></div>
-      <div className="pos-workspace">
+      <div className="pos-title"><span className="pos-title-icon"><Barcode size={24} /></span><div><h1>{view === 'sale' ? 'Ponto de venda' : 'Fechamento diário'}</h1><p>{view === 'sale' ? 'Leia o código, informe as unidades e acompanhe o total da venda.' : 'Consulte os cupons e os valores recebidos por forma de pagamento.'}</p></div></div>
+      <nav className="pos-tabs" aria-label="PDV"><button type="button" className={view === 'sale' ? 'active' : ''} onClick={() => setView('sale')}>Caixa</button><button type="button" className={view === 'daily' ? 'active' : ''} onClick={() => setView('daily')}>Relatório diário</button></nav>
+      {view === 'sale' ? <div className="pos-workspace">
         <section className="pos-add-card">
           <div className="pos-section-heading"><strong>Adicionar produto</strong><span>Leitor de código ou digitação</span></div>
           <form className="pos-add-form" onSubmit={event => { event.preventDefault(); lookupProduct(code); }}>
@@ -240,10 +311,20 @@ export function PointOfSale() {
         <section className="pos-cart">
           <div className="pos-section-heading pos-cart-heading"><div><strong>Itens da venda</strong><span>{cart.length} {cart.length === 1 ? 'produto' : 'produtos'} · {totalUnits} {totalUnits === 1 ? 'unidade' : 'unidades'}</span></div><Button variant="outline" onClick={clearSale} disabled={!cart.length}><Trash2 />Limpar venda</Button></div>
           {cart.length ? <div className="pos-cart-lines">{cart.map(line => <article className="pos-cart-line" key={line.barcode}><div className="pos-cart-description"><strong>{line.description || 'Produto sem descrição'}</strong><span>Cód. {line.reducedCode || line.barcode} · {currency.format(line.unitPrice)} / un.</span></div>{editingBarcode === line.barcode ? <form className="pos-edit-quantity" onSubmit={event => { event.preventDefault(); saveQuantity(line.barcode); }}><input aria-label={`Nova quantidade de ${line.description}`} type="number" min="1" step="1" inputMode="numeric" value={editQuantity} onChange={event => setEditQuantity(event.target.value)} autoFocus /><button type="submit" aria-label="Salvar quantidade"><Check size={15} /></button><button type="button" aria-label="Cancelar edição" onClick={() => setEditingBarcode(null)}><X size={15} /></button></form> : <div className="pos-line-quantity"><button type="button" aria-label={`Diminuir quantidade de ${line.description}`} onClick={() => adjustQuantity(line.barcode, -1)}><Minus size={15} /></button><strong>{line.quantity}</strong><button type="button" aria-label={`Aumentar quantidade de ${line.description}`} onClick={() => adjustQuantity(line.barcode, 1)}><Plus size={15} /></button><button type="button" className="pos-edit-quantity-button" aria-label={`Editar quantidade de ${line.description}`} onClick={() => startEditing(line)}><Pencil size={14} /></button></div>}<strong className="pos-line-total">{currency.format(line.unitPrice * line.quantity)}</strong><button className="pos-remove-line" type="button" aria-label={`Excluir ${line.description}`} onClick={() => setCart(current => current.filter(item => item.barcode !== line.barcode))}><Trash2 size={16} /></button></article>)}</div> : <div className="pos-empty"><Barcode size={28} /><strong>Venda sem itens</strong><span>Consulte ou leia um produto para começar.</span></div>}
-          <div className="pos-grand-total"><span>Total da venda</span><strong>{currency.format(total)}</strong></div>
+          <div className="pos-grand-total"><span>Total da venda</span><strong>{currency.format(total)}</strong><Button onClick={openCheckout} disabled={!cart.length}><FileDown />Fechar cupom</Button></div>
         </section>
-      </div>
+      </div> : <section className="pos-daily-report">
+        <div className="pos-report-toolbar"><label>Data do movimento<input type="date" value={dailyDate} onChange={event => setDailyDate(event.target.value)} /></label><Button variant="outline" onClick={() => window.print()} disabled={!dailyReport?.couponCount}><Printer />Imprimir resumo</Button><Button onClick={closeDay} disabled={reportLoading || closingDay}><Check />{closingDay ? 'Fechando…' : dailyReport?.closure ? 'Atualizar fechamento' : 'Fechar caixa do dia'}</Button></div>
+        {reportMessage && <p className="pos-report-message" role="status">{reportMessage}</p>}
+        {reportLoading ? <div className="pos-empty">Carregando relatório…</div> : dailyReport && <>
+          <div className="pos-report-summary"><article><span>Vendas no dia</span><strong>{currency.format(dailyReport.total)}</strong></article><article><span>Cupons emitidos</span><strong>{dailyReport.couponCount}</strong></article><article><span>Unidades vendidas</span><strong>{dailyReport.sales.reduce((sum, sale) => sum + sale.items.reduce((sub, item) => sub + item.quantity, 0), 0)}</strong></article></div>
+          <section className="pos-payment-summary"><h2>Totais por forma de pagamento</h2><div>{paymentMethods.map(method => <div key={method.value}><span>{method.label}</span><strong>{currency.format(dailyReport.paymentTotals[method.value] ?? 0)}</strong></div>)}</div></section>
+          {dailyReport.closure && <p className="pos-closed-notice">Fechamento salvo em {new Date(dailyReport.closure.closedAt).toLocaleString('pt-BR')}.</p>}
+          <section className="pos-daily-coupons"><h2>Cupons do dia</h2>{dailyReport.sales.length ? dailyReport.sales.map(sale => <details className="pos-coupon" key={sale.id}><summary><span>Cupom #{sale.saleNumber} · {new Date(sale.createdAt).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}</span><strong>{currency.format(sale.total)}</strong></summary><div className="pos-coupon-content"><div className="pos-coupon-lines">{sale.items.map((item, index) => <div key={`${sale.id}-${index}`}><span>{item.quantity} × {item.description || item.barcode}</span><b>{currency.format(item.lineTotal)}</b></div>)}</div><div className="pos-coupon-payments"><strong>Pagamentos</strong>{sale.payments.map((payment, index) => <div key={`${sale.id}-payment-${index}`}><span>{paymentMethods.find(method => method.value === payment.method)?.label ?? payment.method}</span><b>{currency.format(payment.amount)}</b></div>)}</div></div></details>) : <div className="pos-empty"><Barcode size={26} /><strong>Nenhum cupom nesta data</strong></div>}</section>
+        </>}
+      </section>}
     </main>
+    {checkoutOpen && <div className="barcode-scanner-backdrop" onClick={() => !savingSale && setCheckoutOpen(false)}><div className="pos-checkout-dialog" role="dialog" aria-modal="true" aria-labelledby="checkout-title" onClick={event => event.stopPropagation()}><div className="barcode-scanner-heading"><div><strong id="checkout-title">Fechar cupom</strong><span>Total do cupom: {currency.format(total)}</span></div><button type="button" className="inventory-remove" aria-label="Cancelar fechamento" onClick={() => setCheckoutOpen(false)} disabled={savingSale}><X size={19} /></button></div><form onSubmit={completeSale}><div className="pos-payment-rows">{payments.map((payment, index) => <div className="pos-payment-row" key={index}><label>Forma<select value={payment.method} onChange={event => setPayments(current => current.map((entry, row) => row === index ? { ...entry, method: event.target.value as PaymentMethod } : entry))}>{paymentMethods.map(method => <option key={method.value} value={method.value}>{method.label}</option>)}</select></label><label>Valor<input inputMode="decimal" value={payment.amount} onChange={event => { if (/^[\d.,]*$/.test(event.target.value)) setPayments(current => current.map((entry, row) => row === index ? { ...entry, amount: event.target.value } : entry)); }} /></label><button type="button" className="pos-payment-remove" aria-label="Remover forma de pagamento" disabled={payments.length === 1} onClick={() => setPayments(current => current.filter((_, row) => row !== index))}><Trash2 size={15} /></button></div>)}</div><Button type="button" variant="outline" className="pos-add-payment" onClick={addPayment}><CirclePlus />Adicionar outra forma</Button><div className="pos-payment-balance"><span>Pago: {currency.format(paymentCents / 100)}</span><strong>{paymentCents === totalCents ? 'Pagamento conferido' : `Falta: ${currency.format(Math.max(totalCents - paymentCents, 0) / 100)}`}</strong></div><Button type="submit" className="pos-confirm-sale" disabled={!canCompleteSale || savingSale}>{savingSale ? 'Gravando cupom…' : 'Gravar cupom e iniciar próximo'}</Button></form></div></div>}
     {scannerOpen && <div className="barcode-scanner-backdrop" onClick={() => setScannerOpen(false)}><div className="barcode-scanner-dialog" role="dialog" aria-modal="true" aria-labelledby="pos-scanner-title" onClick={event => event.stopPropagation()}><div className="barcode-scanner-heading"><div><strong id="pos-scanner-title">Ler código de barras</strong><span>{scannerMessage}</span></div><button type="button" className="inventory-remove" aria-label="Fechar leitor" onClick={() => setScannerOpen(false)}><X size={19} /></button></div><video ref={videoRef} className="barcode-scanner-video" autoPlay muted playsInline /><p className="barcode-scanner-help">Mantenha o código dentro da imagem e aguarde a leitura.</p><Button type="button" variant="outline" onClick={() => setScannerOpen(false)}>Fechar câmera</Button></div></div>}
   </div>;
 }
