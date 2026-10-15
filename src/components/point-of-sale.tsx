@@ -37,6 +37,7 @@ function priceInCents(value: string) {
   return price === null ? null : Math.round(price * 100);
 }
 
+
 const currency = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
 
 export function PointOfSale() {
@@ -82,6 +83,10 @@ export function PointOfSale() {
       quantityRef.current?.select();
     }
   }, [selectedProduct]);
+
+  useEffect(() => {
+    if (checkoutOpen) document.getElementById('pos-discount')?.focus();
+  }, [checkoutOpen]);
 
   useEffect(() => {
     let active = true;
@@ -246,7 +251,7 @@ export function PointOfSale() {
 
   function openCheckout() {
     setDiscount('0,00');
-    setPayments([{ method: 'cash', amount: moneyInput(totalCents), receivedAmount: moneyInput(totalCents) }]);
+    setPayments([{ method: 'cash', amount: moneyInput(totalCents), receivedAmount: '' }]);
     setCheckoutOpen(true);
   }
 
@@ -257,6 +262,18 @@ export function PointOfSale() {
 
   useEffect(() => {
     function handleShortcut(event: KeyboardEvent) {
+      if (checkoutOpen && event.key === 'Enter') {
+        const active = document.activeElement;
+        if (active instanceof HTMLInputElement || active instanceof HTMLSelectElement) {
+          event.preventDefault();
+          const form = active.closest('form');
+          const fields = form ? Array.from(form.querySelectorAll<HTMLInputElement | HTMLSelectElement>('input:not(:disabled), select:not(:disabled)')) : [];
+          const index = fields.indexOf(active);
+          if (index >= 0 && index < fields.length - 1) fields[index + 1].focus();
+          else if (form && canCompleteSale) form.requestSubmit();
+        }
+        return;
+      }
       if (event.key !== 'F9' || view !== 'sale') return;
       if (receipt) {
         event.preventDefault();
