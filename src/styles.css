@@ -288,7 +288,7 @@
 .pos-report-summary strong { font-size:20px; }
 .pos-payment-summary,.pos-best-sellers,.pos-daily-coupons { margin-top:18px; padding:16px; border:1px solid var(--border); border-radius:7px; }
 .pos-payment-summary h2,.pos-best-sellers h2,.pos-daily-coupons h2 { margin:0 0 12px; font-size:13px; }
-.pos-best-sellers>div { display:grid; }
+.pos-best-sellers>div { display:grid; max-height:280px; overflow-y:auto; overscroll-behavior:contain; padding-right:6px; }
 .pos-best-sellers article { display:flex; align-items:center; gap:12px; padding:10px 2px; border-top:1px solid var(--border); font-size:11px; }
 .pos-best-seller-rank { display:grid; flex:0 0 26px; place-items:center; width:26px; height:26px; border-radius:50%; background:var(--accent); color:var(--primary); font-weight:800; }
 .pos-best-seller-name { display:grid; flex:1; min-width:0; gap:3px; }
