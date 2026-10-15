@@ -283,6 +283,9 @@
 .pos-report-toolbar input { height:36px; padding:0 9px; border:1px solid var(--border); border-radius:5px; background:var(--background); color:var(--foreground); }
 .pos-report-message { margin:0 0 12px; color:var(--success); font-size:11px; }
 .pos-report-print-header { display:none; }
+.pos-report-tabs { display:flex; flex-wrap:wrap; gap:6px; margin:0 0 14px; border-bottom:1px solid var(--border); }
+.pos-report-tabs button { padding:9px 12px; border:0; border-bottom:2px solid transparent; background:transparent; color:var(--muted-foreground); font-size:11px; font-weight:700; cursor:pointer; }
+.pos-report-tabs button.active { border-bottom-color:var(--primary); color:var(--primary); }
 .pos-report-summary { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:12px; }
 .pos-report-summary article { display:grid; gap:7px; padding:16px; border:1px solid var(--border); border-radius:7px; background:var(--background); }
 .pos-report-summary span { color:var(--muted-foreground); font-size:10px; }
@@ -375,7 +378,7 @@
   @page pos-report-page { size:A4 portrait; margin:12mm; }
   body:has(.pos-daily-report) .pos-page { page:pos-report-page; height:auto; min-height:0; overflow:visible; display:block; }
   body:has(.pos-daily-report) .pos-main { width:100%; height:auto; overflow:visible; padding:0; display:block; }
-  body:has(.pos-daily-report) .pos-header,body:has(.pos-daily-report) .pos-tabs,body:has(.pos-daily-report) .pos-title,body:has(.pos-daily-report) .pos-report-toolbar,body:has(.pos-daily-report) .pos-report-message { display:none !important; }
+  body:has(.pos-daily-report) .pos-header,body:has(.pos-daily-report) .pos-tabs,body:has(.pos-daily-report) .pos-title,body:has(.pos-daily-report) .pos-report-toolbar,body:has(.pos-daily-report) .pos-report-tabs,body:has(.pos-daily-report) .pos-report-message { display:none !important; }
   body:has(.pos-daily-report) .pos-report-print-header { display:block; margin-bottom:14px; padding-bottom:10px; border-bottom:2px solid #222; text-align:center; color:#111; }
   .pos-report-print-header strong { display:block; font-size:16px; font-weight:900; }
   .pos-report-print-header span,.pos-report-print-header div { display:block; margin-top:3px; font-size:10px; }
