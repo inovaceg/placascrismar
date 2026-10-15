@@ -182,10 +182,10 @@ export function PointOfSale() {
     setMessage(product ? 'Produto localizado. Informe a quantidade e adicione à venda.' : value ? 'Código não encontrado no catálogo importado.' : 'Digite ou leia o código de barras do produto.');
   }
 
-  function addProduct(productOverride?: CatalogItem) {
-    const product = productOverride ?? selectedProduct;
+  function addProduct() {
+    const product = selectedProduct;
     if (!product) return;
-    const amount = productOverride ? 1 : Number(quantity);
+    const amount = Number(quantity);
     const unitPrice = parsePrice(product.price);
     if (!Number.isInteger(amount) || amount < 1) {
       setMessage('Informe uma quantidade inteira maior que zero.');
@@ -319,7 +319,7 @@ export function PointOfSale() {
       {view === 'sale' ? <div className="pos-workspace">
         <section className="pos-add-card">
           <div className="pos-section-heading"><strong>Adicionar produto</strong><span>Leitor de código ou digitação</span></div>
-          <form className="pos-add-form" onSubmit={event => { event.preventDefault(); const product = productByBarcode.get(cleanCode(code)); if (product) addProduct(product); else lookupProduct(code); }}>
+          <form className="pos-add-form" onSubmit={event => { event.preventDefault(); lookupProduct(code); }}>
             <label htmlFor="pos-barcode">Código de barras</label>
             <div className="pos-barcode-field"><input ref={barcodeRef} id="pos-barcode" value={code} onChange={event => setCode(event.target.value)} placeholder="Leia ou digite o código" autoComplete="off" autoFocus /><Button type="submit" variant="outline" disabled={loading || !code.trim()}><Search />Consultar</Button></div>
           </form>
