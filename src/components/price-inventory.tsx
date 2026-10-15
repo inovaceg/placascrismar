@@ -5,6 +5,7 @@ import { loadCatalog } from '@/lib/catalog-store';
 import type { CatalogItem } from '@/lib/excel-catalog';
 
 type ChangedPrice = { reducedCode: string; barcode: string; description: string; currentPrice: string; newPrice: string };
+const inventoryStorageKey = 'crismar-inventory-price-changes-v1';
 type DetectedCode = { rawValue: string };
 type CameraBarcodeDetector = { detect: (source: HTMLVideoElement) => Promise<DetectedCode[]> };
 
@@ -25,11 +26,24 @@ function samePrice(first: string, second: string) {
   return firstValue !== null && secondValue !== null && firstValue === secondValue;
 }
 
+function readSavedChanges(): ChangedPrice[] {
+  try {
+    const saved = localStorage.getItem(inventoryStorageKey);
+    if (!saved) return [];
+    const parsed: unknown = JSON.parse(saved);
+    if (!Array.isArray(parsed)) return [];
+    return parsed.filter((item): item is ChangedPrice => item && typeof item.reducedCode === 'string' && typeof item.barcode === 'string' && typeof item.description === 'string' && typeof item.currentPrice === 'string' && typeof item.newPrice === 'string');
+  } catch {
+    return [];
+  }
+}
+
 export function PriceInventory() {
   const [catalog, setCatalog] = useState<CatalogItem[]>([]);
   const [barcode, setBarcode] = useState('');
   const [newPrice, setNewPrice] = useState('');
   const [changes, setChanges] = useState<ChangedPrice[]>([]);
+  const [changesReady, setChangesReady] = useState(false);
   const [notice, setNotice] = useState('Carregando produtos do catálogo…');
   const [loading, setLoading] = useState(true);
   const [activeProduct, setActiveProduct] = useState<CatalogItem | null>(null);
@@ -38,6 +52,20 @@ export function PriceInventory() {
   const barcodeRef = useRef<HTMLInputElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const catalogByBarcode = useMemo(() => new Map(catalog.map(item => [normalizedBarcode(item.barcode), item])), [catalog]);
+
+  useEffect(() => {
+    setChanges(readSavedChanges());
+    setChangesReady(true);
+  }, []);
+
+  useEffect(() => {
+    if (!changesReady) return;
+    try {
+      localStorage.setItem(inventoryStorageKey, JSON.stringify(changes));
+    } catch {
+      setNotice('Não foi possível salvar o relatório neste dispositivo. Libere espaço no navegador e tente novamente.');
+    }
+  }, [changes, changesReady]);
 
   useEffect(() => {
     if (!scannerOpen) return;
@@ -200,7 +228,7 @@ export function PriceInventory() {
         {scannerOpen && <div className="barcode-scanner-backdrop" onClick={() => setScannerOpen(false)}><div className="barcode-scanner-dialog" role="dialog" aria-modal="true" aria-labelledby="scanner-title" onClick={event => event.stopPropagation()}><div className="barcode-scanner-heading"><div><strong id="scanner-title">Ler código de barras</strong><span>{scannerMessage}</span></div><button type="button" className="inventory-remove" aria-label="Fechar leitor" onClick={() => setScannerOpen(false)}><X size={19} /></button></div><video ref={videoRef} className="barcode-scanner-video" autoPlay muted playsInline /><p className="barcode-scanner-help">Mantenha o código dentro da imagem e aguarde a leitura.</p><Button type="button" variant="outline" onClick={() => setScannerOpen(false)}>Fechar câmera</Button></div></div>}
       </section>
       <section className="inventory-report">
-        <div className="inventory-report-heading"><div><strong>Relatório de alterações</strong><span>{changes.length} {changes.length === 1 ? 'produto registrado' : 'produtos registrados'}</span></div>{changes.length > 0 && <Button variant="outline" onClick={exportCsv}><Download size={16} />Exportar CSV</Button>}</div>
+        <div className="inventory-report-heading"><div><strong>Relatório de alterações</strong><span>{changes.length} {changes.length === 1 ? 'produto registrado' : 'produtos registrados'}</span><span>Salvo automaticamente neste dispositivo</span></div>{changes.length > 0 && <Button variant="outline" onClick={exportCsv}><Download size={16} />Exportar CSV</Button>}</div>
         {changes.length ? <div className="inventory-table-wrap"><table className="inventory-table"><thead><tr><th>Código reduzido</th><th>Código de barras</th><th>Produto</th><th>Preço atual</th><th>Novo preço</th><th><span className="sr-only">Ações</span></th></tr></thead><tbody>{changes.map(change => <tr key={change.barcode}><td data-label="Código reduzido">{change.reducedCode || '—'}</td><td data-label="Código de barras">{change.barcode}</td><td data-label="Produto">{change.description || '—'}</td><td data-label="Preço atual">R$ {change.currentPrice || '—'}</td><td data-label="Novo preço" className="inventory-new-value">R$ {change.newPrice}</td><td className="inventory-remove-cell"><button type="button" className="inventory-remove" aria-label={`Remover ${change.description || change.barcode}`} onClick={() => removeChange(change.barcode)}><Trash2 size={15} /></button></td></tr>)}</tbody></table></div> : <div className="inventory-empty"><FileDown size={24} /><strong>Nenhum preço registrado ainda</strong><span>Consulte um produto e informe o novo preço. As alterações aparecerão aqui.</span></div>}
       </section>
     </div>
