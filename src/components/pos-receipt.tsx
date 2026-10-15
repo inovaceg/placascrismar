@@ -29,7 +29,7 @@ export function PosReceipt({ receipt, onClose }: { receipt: PosReceiptData; onCl
         <div className="pos-receipt-rule" />
         <div className="pos-receipt-pricing"><div><span>Subtotal</span><b>{currency.format(receipt.subtotal)}</b></div>{receipt.discount > 0 && <div><span>Desconto</span><b>- {currency.format(receipt.discount)}</b></div>}</div>
         <div className="pos-receipt-total"><span>TOTAL</span><strong>{currency.format(receipt.total)}</strong></div>
-        <div className="pos-receipt-payments"><strong>FORMA DE PAGAMENTO</strong>{receipt.payments.map((payment, index) => <div key={`${payment.method}-${index}`}><span>{paymentLabel(payment.method)}</span><b>{currency.format(payment.amount)}</b></div>)}</div>
+        <div className="pos-receipt-payments"><strong>FORMA DE PAGAMENTO</strong>{receipt.payments.map((payment, index) => <div className="pos-receipt-payment" key={`${payment.method}-${index}`}><div><span>{paymentLabel(payment.method)}</span><b>{currency.format(payment.amount)}</b></div>{payment.method === 'cash' && payment.receivedAmount !== undefined && <><div><span>Dinheiro recebido</span><b>{currency.format(payment.receivedAmount)}</b></div><div><span>Troco</span><b>{currency.format(payment.changeAmount ?? 0)}</b></div></>}</div>)}</div>
         <div className="pos-receipt-rule" />
         <footer>Obrigado pela preferência!</footer>
       </article>

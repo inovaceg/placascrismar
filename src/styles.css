@@ -350,7 +350,8 @@
 .pos-receipt-rule { margin:10px 0; border-top:1px dashed #333; }
 .pos-receipt-items { display:grid; gap:8px; }
 .pos-receipt-item>strong { display:block; margin-bottom:3px; }
-.pos-receipt-item>div,.pos-receipt-total,.pos-receipt-payments>div,.pos-receipt-pricing>div { display:flex; justify-content:space-between; gap:10px; }
+.pos-receipt-item>div,.pos-receipt-total,.pos-receipt-payment>div,.pos-receipt-pricing>div { display:flex; justify-content:space-between; gap:10px; }
+.pos-receipt-payment { display:grid; gap:3px; }
 .pos-receipt-pricing { display:grid; gap:4px; margin:8px 0; }
 .pos-receipt-total { align-items:center; font-size:14px; font-weight:800; }
 .pos-receipt-payments { display:grid; gap:5px; margin-top:10px; }

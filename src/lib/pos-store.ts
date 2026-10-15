@@ -9,7 +9,7 @@ export const paymentMethods: { value: PaymentMethod; label: string }[] = [
 ];
 
 export type PosSaleItem = { barcode: string; reducedCode: string; description: string; quantity: number; unitPrice: number; lineTotal: number };
-export type PosPayment = { method: PaymentMethod; amount: number };
+export type PosPayment = { method: PaymentMethod; amount: number; receivedAmount?: number; changeAmount?: number };
 export type PosSale = { id: string; saleNumber: number; createdAt: string; subtotal: number; discount: number; total: number; items: PosSaleItem[]; payments: PosPayment[] };
 export type PosDayClosure = { closedAt: string; total: number; couponCount: number; paymentTotals: Record<string, number> };
 export type PosBestSellingItem = { barcode: string; reducedCode: string; description: string; quantity: number; total: number };
