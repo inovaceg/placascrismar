@@ -183,3 +183,13 @@
 @media print { @page inventory { size:A4 portrait; margin:0; } body:has(.inventory-page) .inventory-page { page:inventory; } body:has(.inventory-page) .app-header, body:has(.inventory-page) .inventory-lookup, body:has(.inventory-page) .inventory-actions, body:has(.inventory-page) .inventory-status, body:has(.inventory-page) .app-footer { display:none !important; } body:has(.inventory-page) .main-shell { max-width:none; padding:10mm !important; } body:has(.inventory-page) .inventory-heading { margin-bottom:8mm; } body:has(.inventory-page) .inventory-layout { display:block; } body:has(.inventory-page) .inventory-report { border:0; } body:has(.inventory-page) .inventory-report-heading { padding:0 0 4mm; } body:has(.inventory-page) .inventory-remove-cell { display:none; } }
 @media(max-width:760px) { .app-header { padding:0 16px; gap:12px; }.brand { font-size:18px; }.header-divider,.studio-label { display:none; } }
 @media(max-width:420px) { .inventory-actions { width:100%; }.inventory-actions button { flex:1; } }
+.inventory-camera-button { width:100%; margin-top:12px; }
+.barcode-scanner-backdrop { position:fixed; inset:0; z-index:100; display:grid; place-items:center; padding:16px; background:rgb(0 0 0 / 70%); }
+.barcode-scanner-dialog { width:min(100%, 520px); display:flex; flex-direction:column; gap:16px; padding:18px; border-radius:10px; background:var(--card); box-shadow:var(--paper-shadow); }
+.barcode-scanner-heading { display:flex; justify-content:space-between; align-items:flex-start; gap:14px; }
+.barcode-scanner-heading>div { display:grid; gap:5px; }
+.barcode-scanner-heading strong { font-size:16px; }
+.barcode-scanner-heading span,.barcode-scanner-help { color:var(--muted-foreground); font-size:12px; }
+.barcode-scanner-video { display:block; width:100%; max-height:60vh; aspect-ratio:4/3; border-radius:7px; background:#111; object-fit:cover; }
+.barcode-scanner-help { margin:0; text-align:center; }
+@media(max-width:600px) { .barcode-scanner-dialog { padding:14px; }.barcode-scanner-video { max-height:58vh; } }
