@@ -282,12 +282,19 @@
 .pos-report-toolbar label { display:grid; gap:5px; margin-right:auto; color:var(--muted-foreground); font-size:10px; font-weight:700; }
 .pos-report-toolbar input { height:36px; padding:0 9px; border:1px solid var(--border); border-radius:5px; background:var(--background); color:var(--foreground); }
 .pos-report-message { margin:0 0 12px; color:var(--success); font-size:11px; }
-.pos-report-summary { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; }
+.pos-report-summary { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; }
 .pos-report-summary article { display:grid; gap:7px; padding:16px; border:1px solid var(--border); border-radius:7px; background:var(--background); }
 .pos-report-summary span { color:var(--muted-foreground); font-size:10px; }
 .pos-report-summary strong { font-size:20px; }
-.pos-payment-summary,.pos-daily-coupons { margin-top:18px; padding:16px; border:1px solid var(--border); border-radius:7px; }
-.pos-payment-summary h2,.pos-daily-coupons h2 { margin:0 0 12px; font-size:13px; }
+.pos-payment-summary,.pos-best-sellers,.pos-daily-coupons { margin-top:18px; padding:16px; border:1px solid var(--border); border-radius:7px; }
+.pos-payment-summary h2,.pos-best-sellers h2,.pos-daily-coupons h2 { margin:0 0 12px; font-size:13px; }
+.pos-best-sellers>div { display:grid; }
+.pos-best-sellers article { display:flex; align-items:center; gap:12px; padding:10px 2px; border-top:1px solid var(--border); font-size:11px; }
+.pos-best-seller-rank { display:grid; flex:0 0 26px; place-items:center; width:26px; height:26px; border-radius:50%; background:var(--accent); color:var(--primary); font-weight:800; }
+.pos-best-seller-name { display:grid; flex:1; min-width:0; gap:3px; }
+.pos-best-seller-name strong { overflow-wrap:anywhere; }
+.pos-best-seller-name small,.pos-best-sellers>p { color:var(--muted-foreground); font-size:10px; }
+.pos-best-sellers article>strong,.pos-best-sellers article>span:last-child { white-space:nowrap; }
 .pos-payment-summary>div { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; }
 .pos-payment-summary>div>div { display:flex; justify-content:space-between; gap:8px; padding:9px; border-radius:5px; background:var(--background); font-size:10px; }
 .pos-payment-summary strong { white-space:nowrap; }

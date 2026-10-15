@@ -12,7 +12,8 @@ export type PosSaleItem = { barcode: string; reducedCode: string; description: s
 export type PosPayment = { method: PaymentMethod; amount: number };
 export type PosSale = { id: string; saleNumber: number; createdAt: string; subtotal: number; discount: number; total: number; items: PosSaleItem[]; payments: PosPayment[] };
 export type PosDayClosure = { closedAt: string; total: number; couponCount: number; paymentTotals: Record<string, number> };
-export type PosDailyReport = { businessDate: string; total: number; couponCount: number; paymentTotals: Record<string, number>; sales: PosSale[]; closure: PosDayClosure | null };
+export type PosBestSellingItem = { barcode: string; reducedCode: string; description: string; quantity: number; total: number };
+export type PosDailyReport = { businessDate: string; total: number; discountTotal: number; couponCount: number; paymentTotals: Record<string, number>; bestSellingItems: PosBestSellingItem[]; sales: PosSale[]; closure: PosDayClosure | null };
 
 const endpoint = 'https://wiaqzkueanlwcoyzuupl.supabase.co/rest/v1/rpc';
 const apiKey = 'sb_publishable_pnuhuR44AzUo_WxbUgmRuA_lPDNgty5';
