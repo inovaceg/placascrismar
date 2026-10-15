@@ -10,11 +10,17 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as BuscaPrecoRouteImport } from './routes/busca-preco'
 import { Route as InventarioRouteImport } from './routes/inventario'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BuscaPrecoRoute = BuscaPrecoRouteImport.update({
+  id: '/busca-preco',
+  path: '/busca-preco',
   getParentRoute: () => rootRouteImport,
 } as any)
 const InventarioRoute = InventarioRouteImport.update({
@@ -25,27 +31,31 @@ const InventarioRoute = InventarioRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/busca-preco': typeof BuscaPrecoRoute
   '/inventario': typeof InventarioRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/busca-preco': typeof BuscaPrecoRoute
   '/inventario': typeof InventarioRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/busca-preco': typeof BuscaPrecoRoute
   '/inventario': typeof InventarioRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/inventario'
+  fullPaths: '/' | '/busca-preco' | '/inventario'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/inventario'
-  id: '__root__' | '/' | '/inventario'
+  to: '/' | '/busca-preco' | '/inventario'
+  id: '__root__' | '/' | '/busca-preco' | '/inventario'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  BuscaPrecoRoute: typeof BuscaPrecoRoute
   InventarioRoute: typeof InventarioRoute
 }
 
@@ -56,6 +66,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/busca-preco': {
+      id: '/busca-preco'
+      path: '/busca-preco'
+      fullPath: '/busca-preco'
+      preLoaderRoute: typeof BuscaPrecoRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/inventario': {
@@ -70,6 +87,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  BuscaPrecoRoute: BuscaPrecoRoute,
   InventarioRoute: InventarioRoute,
 }
 export const routeTree = rootRouteImport

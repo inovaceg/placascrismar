@@ -193,3 +193,27 @@
 .barcode-scanner-video { display:block; width:100%; max-height:60vh; aspect-ratio:4/3; border-radius:7px; background:#111; object-fit:cover; }
 .barcode-scanner-help { margin:0; text-align:center; }
 @media(max-width:600px) { .barcode-scanner-dialog { padding:14px; }.barcode-scanner-video { max-height:58vh; } }
+.price-lookup-page { min-height:100vh; background:var(--background); }
+.price-lookup-header { height:66px; display:flex; align-items:center; justify-content:space-between; padding:0 max(22px,calc((100vw - 940px)/2)); border-bottom:1px solid var(--border); background:var(--card); font-size:13px; font-weight:700; }
+.price-lookup-back { display:inline-flex; align-items:center; gap:8px; color:var(--muted-foreground); font-size:12px; }
+.price-lookup-main { width:min(100% - 32px,640px); margin:0 auto; padding:50px 0 40px; }
+.price-lookup-title { display:flex; flex-direction:column; align-items:center; text-align:center; margin-bottom:26px; }
+.price-lookup-icon { display:grid; place-items:center; width:52px; height:52px; margin-bottom:12px; border-radius:14px; background:var(--accent); color:var(--primary); }
+.price-lookup-title h1 { font-size:30px; }
+.price-lookup-title p { max-width:430px; margin:10px 0 0; color:var(--muted-foreground); font-size:13px; line-height:1.6; }
+.price-lookup-card { padding:24px; border:1px solid var(--border); border-radius:12px; background:var(--card); box-shadow:var(--paper-shadow); }
+.price-lookup-form label { display:block; margin-bottom:8px; font-size:12px; font-weight:700; }
+.price-lookup-fields { display:flex; gap:9px; }
+.price-lookup-fields input { min-width:0; flex:1; height:44px; padding:0 12px; border:1px solid var(--border); border-radius:6px; background:var(--background); font-size:13px; }
+.price-lookup-camera { width:100%; margin-top:12px; }
+.price-lookup-message { min-height:20px; margin:15px 0 0; color:var(--muted-foreground); text-align:center; font-size:11px; }
+.price-lookup-count { margin:14px 0 0; color:var(--muted-foreground); text-align:center; font-size:10px; }
+.price-result { margin-top:22px; padding:24px 20px; border:1px solid color-mix(in oklch,var(--success) 26%,var(--border)); border-radius:10px; background:var(--success-surface); text-align:center; }
+.price-result-label { color:var(--success); font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:.08em; }
+.price-result h2 { margin:10px 0 20px; font-size:clamp(20px,5vw,30px); font-weight:800; line-height:1.2; }
+.price-result-sale { display:grid; gap:4px; padding:17px; border-radius:8px; background:var(--card); }
+.price-result-sale span { color:var(--muted-foreground); font-size:11px; }
+.price-result-sale strong { color:var(--primary); font-size:clamp(36px,10vw,54px); font-weight:900; line-height:1.1; }
+.price-result-codes { display:flex; flex-wrap:wrap; justify-content:center; gap:8px 18px; margin-top:14px; color:var(--muted-foreground); font-size:10px; }
+.price-result-codes b { color:var(--foreground); }
+@media(max-width:520px) { .price-lookup-header { padding:0 16px; }.price-lookup-main { padding-top:32px; }.price-lookup-card { padding:18px 14px; }.price-lookup-fields { flex-direction:column; }.price-lookup-fields button { width:100%; } }
