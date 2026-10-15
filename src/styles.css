@@ -270,6 +270,7 @@
 .pos-grand-total { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:19px 18px; background:var(--background); }
 .pos-grand-total span { font-size:13px; font-weight:700; }
 .pos-grand-total strong { color:var(--primary); font-size:clamp(24px,5vw,34px); font-weight:900; white-space:nowrap; }
+.pos-grand-total kbd { padding:2px 5px; border:1px solid currentColor; border-radius:4px; font:inherit; font-size:10px; opacity:.8; }
 @media(max-width:800px) { .pos-workspace { grid-template-columns:1fr; }.pos-cart-lines { max-height:unset; } }
 @media(max-width:520px) { .pos-header { padding:0 14px; gap:12px; }.pos-main { padding-top:24px; }.pos-title h1 { font-size:23px; }.pos-cart-heading { align-items:flex-start; }.pos-cart-heading button { padding-inline:9px; font-size:11px; }.pos-cart-line { grid-template-columns:minmax(0,1fr) auto; gap:8px 10px; }.pos-line-quantity { grid-row:2; }.pos-line-total { grid-column:2; grid-row:2; }.pos-remove-line { grid-column:2; grid-row:1; justify-self:end; }.pos-barcode-field { grid-template-columns:1fr; }.pos-barcode-field button { width:100%; }.pos-quantity-row { grid-template-columns:80px minmax(0,1fr); }.pos-quantity-row button { padding-inline:8px; font-size:11px; } }
 .pos-tabs { display:flex; flex:0 0 auto; gap:8px; margin:-6px 0 14px; border-bottom:1px solid var(--border); }

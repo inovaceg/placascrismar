@@ -236,6 +236,17 @@ export function PointOfSale() {
     setCheckoutOpen(true);
   }
 
+  useEffect(() => {
+    function handleShortcut(event: KeyboardEvent) {
+      if (event.key !== 'F9' || view !== 'sale' || checkoutOpen || savingSale || cart.length === 0) return;
+      event.preventDefault();
+      openCheckout();
+    }
+
+    window.addEventListener('keydown', handleShortcut);
+    return () => window.removeEventListener('keydown', handleShortcut);
+  }, [view, checkoutOpen, savingSale, cart.length, openCheckout]);
+
   function addPayment() {
     const remaining = Math.max(0, totalCents - paymentCents);
     setPayments(current => [...current, { method: 'pix', amount: moneyInput(remaining) }]);
@@ -311,7 +322,7 @@ export function PointOfSale() {
         <section className="pos-cart">
           <div className="pos-section-heading pos-cart-heading"><div><strong>Itens da venda</strong><span>{cart.length} {cart.length === 1 ? 'produto' : 'produtos'} · {totalUnits} {totalUnits === 1 ? 'unidade' : 'unidades'}</span></div><Button variant="outline" onClick={clearSale} disabled={!cart.length}><Trash2 />Limpar venda</Button></div>
           {cart.length ? <div className="pos-cart-lines">{cart.map(line => <article className="pos-cart-line" key={line.barcode}><div className="pos-cart-description"><strong>{line.description || 'Produto sem descrição'}</strong><span>Cód. {line.reducedCode || line.barcode} · {currency.format(line.unitPrice)} / un.</span></div>{editingBarcode === line.barcode ? <form className="pos-edit-quantity" onSubmit={event => { event.preventDefault(); saveQuantity(line.barcode); }}><input aria-label={`Nova quantidade de ${line.description}`} type="number" min="1" step="1" inputMode="numeric" value={editQuantity} onChange={event => setEditQuantity(event.target.value)} autoFocus /><button type="submit" aria-label="Salvar quantidade"><Check size={15} /></button><button type="button" aria-label="Cancelar edição" onClick={() => setEditingBarcode(null)}><X size={15} /></button></form> : <div className="pos-line-quantity"><button type="button" aria-label={`Diminuir quantidade de ${line.description}`} onClick={() => adjustQuantity(line.barcode, -1)}><Minus size={15} /></button><strong>{line.quantity}</strong><button type="button" aria-label={`Aumentar quantidade de ${line.description}`} onClick={() => adjustQuantity(line.barcode, 1)}><Plus size={15} /></button><button type="button" className="pos-edit-quantity-button" aria-label={`Editar quantidade de ${line.description}`} onClick={() => startEditing(line)}><Pencil size={14} /></button></div>}<strong className="pos-line-total">{currency.format(line.unitPrice * line.quantity)}</strong><button className="pos-remove-line" type="button" aria-label={`Excluir ${line.description}`} onClick={() => setCart(current => current.filter(item => item.barcode !== line.barcode))}><Trash2 size={16} /></button></article>)}</div> : <div className="pos-empty"><Barcode size={28} /><strong>Venda sem itens</strong><span>Consulte ou leia um produto para começar.</span></div>}
-          <div className="pos-grand-total"><span>Total da venda</span><strong>{currency.format(total)}</strong><Button onClick={openCheckout} disabled={!cart.length}><FileDown />Fechar cupom</Button></div>
+          <div className="pos-grand-total"><span>Total da venda</span><strong>{currency.format(total)}</strong><Button onClick={openCheckout} disabled={!cart.length}><FileDown />Fechar cupom <kbd>F9</kbd></Button></div>
         </section>
       </div> : <section className="pos-daily-report">
         <div className="pos-report-toolbar"><label>Data do movimento<input type="date" value={dailyDate} onChange={event => setDailyDate(event.target.value)} /></label><Button variant="outline" onClick={() => window.print()} disabled={!dailyReport?.couponCount}><Printer />Imprimir resumo</Button><Button onClick={closeDay} disabled={reportLoading || closingDay}><Check />{closingDay ? 'Fechando…' : dailyReport?.closure ? 'Atualizar fechamento' : 'Fechar caixa do dia'}</Button></div>
