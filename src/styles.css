@@ -286,7 +286,7 @@
 .pos-report-tabs { display:flex; flex-wrap:wrap; gap:6px; margin:0 0 14px; border-bottom:1px solid var(--border); }
 .pos-report-tabs button { padding:9px 12px; border:0; border-bottom:2px solid transparent; background:transparent; color:var(--muted-foreground); font-size:11px; font-weight:700; cursor:pointer; }
 .pos-report-tabs button.active { border-bottom-color:var(--primary); color:var(--primary); }
-.pos-report-summary { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:12px; }
+.pos-report-summary { display:grid; grid-template-columns:repeat(6,minmax(0,1fr)); gap:12px; }
 .pos-report-summary article { display:grid; gap:7px; padding:16px; border:1px solid var(--border); border-radius:7px; background:var(--background); }
 .pos-report-summary span { color:var(--muted-foreground); font-size:10px; }
 .pos-report-summary strong { font-size:20px; }
