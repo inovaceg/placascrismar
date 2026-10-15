@@ -151,7 +151,7 @@
 .inventory-card-heading strong,.inventory-report-heading strong { font-size:13px; }
 .inventory-card-heading div span,.inventory-report-heading div span { color:var(--muted-foreground); font-size:10px; }
 .inventory-form { padding:20px; }
-.inventory-form>label { display:block; margin:0 0 7px; font-size:11px; font-weight:650; }
+.inventory-form form>label { display:block; margin:0 0 7px; font-size:11px; font-weight:650; }
 .inventory-search,.inventory-new-price { display:flex; align-items:center; gap:8px; }
 .inventory-search input,.inventory-new-price input { min-width:0; flex:1; height:39px; padding:0 11px; border:1px solid var(--border); border-radius:5px; background:var(--background); color:var(--foreground); font-size:12px; }
 .inventory-search button,.inventory-new-price button { flex-shrink:0; }

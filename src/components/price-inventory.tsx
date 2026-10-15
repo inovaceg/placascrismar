@@ -113,12 +113,14 @@ export function PriceInventory() {
     <div className="inventory-layout">
       <section className="inventory-lookup">
         <div className="inventory-card-heading"><span className="inventory-icon"><Barcode size={19} /></span><div><strong>Consultar produto</strong><span>Digite o código ou leia com o scanner</span></div></div>
-        <form className="inventory-form" onSubmit={event => { event.preventDefault(); findProduct(barcode); }}>
-          <label htmlFor="inventory-barcode">Código de barras</label>
-          <div className="inventory-search"><input ref={barcodeRef} id="inventory-barcode" value={barcode} onChange={event => setBarcode(event.target.value)} placeholder="Ex.: 7891234567890" autoComplete="off" autoFocus /><Button type="submit" disabled={loading || !barcode.trim()}><Search size={16} />Consultar</Button></div>
+        <div className="inventory-form">
+          <form onSubmit={event => { event.preventDefault(); findProduct(barcode); }}>
+            <label htmlFor="inventory-barcode">Código de barras</label>
+            <div className="inventory-search"><input ref={barcodeRef} id="inventory-barcode" value={barcode} onChange={event => setBarcode(event.target.value)} placeholder="Ex.: 7891234567890" autoComplete="off" autoFocus /><Button type="submit" disabled={loading || !barcode.trim()}><Search size={16} />Consultar</Button></div>
+          </form>
           {activeProduct && <div className="inventory-product" aria-live="polite"><span>Produto encontrado</span><strong>{activeProduct.description || 'Produto sem descrição'}</strong><div><span>Código</span><b>{activeProduct.barcode}</b></div><div><span>Preço de venda cadastrado</span><b className="inventory-current-price">R$ {activeProduct.price || '—'}</b></div></div>}
-          {activeProduct && <><label htmlFor="inventory-new-price">Novo preço</label><div className="inventory-new-price"><span>R$</span><input id="inventory-new-price" inputMode="decimal" value={newPrice} onChange={event => { if (/^[\d.,]*$/.test(event.target.value)) setNewPrice(event.target.value); }} placeholder="0,00" autoFocus /><Button type="button" onClick={addChange} disabled={!newPrice.trim()}><FileDown size={16} />Registrar preço</Button></div></>}
-        </form>
+          {activeProduct && <form onSubmit={event => { event.preventDefault(); addChange(); }}><label htmlFor="inventory-new-price">Novo preço</label><div className="inventory-new-price"><span>R$</span><input id="inventory-new-price" inputMode="decimal" value={newPrice} onChange={event => { if (/^[\d.,]*$/.test(event.target.value)) setNewPrice(event.target.value); }} placeholder="0,00" autoFocus /><Button type="submit" disabled={!newPrice.trim()}><FileDown size={16} />Registrar preço</Button></div></form>}
+        </div>
       </section>
       <section className="inventory-report">
         <div className="inventory-report-heading"><div><strong>Relatório de alterações</strong><span>{changes.length} {changes.length === 1 ? 'produto registrado' : 'produtos registrados'}</span></div>{changes.length > 0 && <Button variant="outline" onClick={exportCsv}><Download size={16} />Exportar CSV</Button>}</div>
