@@ -238,14 +238,22 @@ export function PointOfSale() {
 
   useEffect(() => {
     function handleShortcut(event: KeyboardEvent) {
-      if (event.key !== 'F9' || view !== 'sale' || checkoutOpen || savingSale || cart.length === 0) return;
+      if (event.key !== 'F9' || view !== 'sale') return;
+      if (checkoutOpen) {
+        event.preventDefault();
+        if (!savingSale && canCompleteSale) {
+          document.querySelector<HTMLFormElement>('.pos-checkout-dialog form')?.requestSubmit();
+        }
+        return;
+      }
+      if (savingSale || cart.length === 0) return;
       event.preventDefault();
       openCheckout();
     }
 
     window.addEventListener('keydown', handleShortcut);
     return () => window.removeEventListener('keydown', handleShortcut);
-  }, [view, checkoutOpen, savingSale, cart.length, openCheckout]);
+  }, [view, checkoutOpen, savingSale, cart.length, canCompleteSale, openCheckout]);
 
   function addPayment() {
     const remaining = Math.max(0, totalCents - paymentCents);
