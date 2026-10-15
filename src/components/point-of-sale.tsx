@@ -85,7 +85,10 @@ export function PointOfSale() {
   }, [selectedProduct]);
 
   useEffect(() => {
-    if (checkoutOpen) document.getElementById('pos-discount')?.focus();
+    if (!checkoutOpen) return;
+    const discountInput = document.getElementById('pos-discount') as HTMLInputElement | null;
+    discountInput?.focus();
+    discountInput?.select();
   }, [checkoutOpen]);
 
   useEffect(() => {
@@ -269,8 +272,11 @@ export function PointOfSale() {
           const form = active.closest('form');
           const fields = form ? Array.from(form.querySelectorAll<HTMLInputElement | HTMLSelectElement>('input:not(:disabled), select:not(:disabled)')) : [];
           const index = fields.indexOf(active);
-          if (index >= 0 && index < fields.length - 1) fields[index + 1].focus();
-          else if (form && canCompleteSale) form.requestSubmit();
+          if (index >= 0 && index < fields.length - 1) {
+            const nextField = fields[index + 1];
+            nextField.focus();
+            if (nextField instanceof HTMLInputElement) nextField.select();
+          } else if (form && canCompleteSale) form.requestSubmit();
         }
         return;
       }
