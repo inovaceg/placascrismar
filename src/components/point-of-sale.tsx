@@ -1,11 +1,13 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { ArrowLeft, Barcode, Camera, Check, CirclePlus, Minus, Pencil, Plus, Search, Trash2, X } from 'lucide-react';
+import { ArrowLeft, Barcode, Camera, Check, CirclePlus, FileDown, Minus, Pencil, Plus, Search, Trash2, X } from 'lucide-react';
 import { Link } from '@tanstack/react-router';
 import { Button } from '@/components/ui/button';
 import { loadCatalog } from '@/lib/catalog-store';
+import { closePosDay, loadDailyReport, paymentMethods, savePosSale, type PaymentMethod, type PosDailyReport } from '@/lib/pos-store';
 import type { CatalogItem } from '@/lib/excel-catalog';
 
 type CartLine = { barcode: string; reducedCode: string; description: string; unitPrice: number; quantity: number };
+type PaymentDraft = { method: PaymentMethod; amount: string };
 type DetectedCode = { rawValue: string };
 type BarcodeDetectorLike = { detect: (source: HTMLVideoElement) => Promise<DetectedCode[]> };
 
@@ -20,6 +22,20 @@ function parsePrice(value: string) {
   return Number.isFinite(price) && price >= 0 ? price : null;
 }
 
+function localBusinessDate() {
+  const now = new Date();
+  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+}
+
+function moneyInput(cents: number) {
+  return (cents / 100).toFixed(2).replace('.', ',');
+}
+
+function cents(value: string) {
+  const price = parsePrice(value);
+  return price === null ? null : Math.round(price * 100);
+}
+
 const currency = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' });
 
 export function PointOfSale() {
@@ -32,6 +48,15 @@ export function PointOfSale() {
   const [editQuantity, setEditQuantity] = useState('');
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState('Carregando catálogo de produtos…');
+  const [view, setView] = useState<'sale' | 'daily'>('sale');
+  const [checkoutOpen, setCheckoutOpen] = useState(false);
+  const [payments, setPayments] = useState<PaymentDraft[]>([]);
+  const [savingSale, setSavingSale] = useState(false);
+  const [dailyDate, setDailyDate] = useState(localBusinessDate);
+  const [dailyReport, setDailyReport] = useState<PosDailyReport | null>(null);
+  const [reportLoading, setReportLoading] = useState(false);
+  const [reportMessage, setReportMessage] = useState('');
+  const [closingDay, setClosingDay] = useState(false);
   const [scannerOpen, setScannerOpen] = useState(false);
   const [scannerMessage, setScannerMessage] = useState('Aponte a câmera para o código de barras.');
   const barcodeRef = useRef<HTMLInputElement>(null);
