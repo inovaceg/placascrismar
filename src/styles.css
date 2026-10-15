@@ -253,9 +253,15 @@
 .pos-cart-description { display:grid; gap:5px; min-width:0; }
 .pos-cart-description strong { overflow:hidden; font-size:12px; text-overflow:ellipsis; }
 .pos-cart-description span { color:var(--muted-foreground); font-size:10px; }
-.pos-line-quantity { display:flex; align-items:center; gap:9px; }
-.pos-line-quantity button,.pos-remove-line { display:grid; place-items:center; width:30px; height:30px; border:1px solid var(--border); border-radius:5px; background:var(--card); color:var(--foreground); cursor:pointer; }
+.pos-line-quantity { display:flex; align-items:center; gap:7px; }
+.pos-line-quantity button,.pos-remove-line,.pos-edit-quantity button { display:grid; place-items:center; width:30px; height:30px; border:1px solid var(--border); border-radius:5px; background:var(--card); color:var(--foreground); cursor:pointer; }
 .pos-line-quantity strong { min-width:18px; text-align:center; font-size:12px; }
+.pos-line-quantity .pos-edit-quantity-button { margin-left:2px; color:var(--muted-foreground); }
+.pos-edit-quantity { display:flex; align-items:center; gap:5px; }
+.pos-edit-quantity input { width:58px; min-width:0; height:34px; padding:0 5px; border:1px solid var(--border); border-radius:5px; background:var(--background); text-align:center; font-size:12px; }
+.pos-edit-quantity button { width:28px; height:28px; }
+.pos-edit-quantity button[type="submit"] { color:var(--success); }
+.pos-edit-quantity button[type="button"] { color:var(--muted-foreground); }
 .pos-line-total { text-align:right; white-space:nowrap; font-size:12px; }
 .pos-remove-line { border:0; color:var(--muted-foreground); }
 .pos-empty { min-height:220px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:9px; color:var(--muted-foreground); text-align:center; }

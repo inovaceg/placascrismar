@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { ArrowLeft, Barcode, Camera, CirclePlus, Minus, Plus, Search, Trash2, X } from 'lucide-react';
+import { ArrowLeft, Barcode, Camera, Check, CirclePlus, Minus, Pencil, Plus, Search, Trash2, X } from 'lucide-react';
 import { Link } from '@tanstack/react-router';
 import { Button } from '@/components/ui/button';
 import { loadCatalog } from '@/lib/catalog-store';
@@ -28,15 +28,25 @@ export function PointOfSale() {
   const [quantity, setQuantity] = useState('1');
   const [selectedProduct, setSelectedProduct] = useState<CatalogItem | null>(null);
   const [cart, setCart] = useState<CartLine[]>([]);
+  const [editingBarcode, setEditingBarcode] = useState<string | null>(null);
+  const [editQuantity, setEditQuantity] = useState('');
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState('Carregando catálogo de produtos…');
   const [scannerOpen, setScannerOpen] = useState(false);
   const [scannerMessage, setScannerMessage] = useState('Aponte a câmera para o código de barras.');
   const barcodeRef = useRef<HTMLInputElement>(null);
+  const quantityRef = useRef<HTMLInputElement>(null);
   const videoRef = useRef<HTMLVideoElement>(null);
   const productByBarcode = useMemo(() => new Map(catalog.map(item => [cleanCode(item.barcode), item])), [catalog]);
   const total = cart.reduce((sum, line) => sum + line.unitPrice * line.quantity, 0);
   const totalUnits = cart.reduce((sum, line) => sum + line.quantity, 0);
+
+  useEffect(() => {
+    if (selectedProduct) {
+      quantityRef.current?.focus();
+      quantityRef.current?.select();
+    }
+  }, [selectedProduct]);
 
   useEffect(() => {
     let active = true;
@@ -162,6 +172,22 @@ export function PointOfSale() {
     }));
   }
 
+  function startEditing(line: CartLine) {
+    setEditingBarcode(line.barcode);
+    setEditQuantity(String(line.quantity));
+  }
+
+  function saveQuantity(barcode: string) {
+    const nextQuantity = Number(editQuantity);
+    if (!Number.isInteger(nextQuantity) || nextQuantity < 1) {
+      setMessage('A quantidade precisa ser um número inteiro maior que zero.');
+      return;
+    }
+    setCart(current => current.map(line => line.barcode === barcode ? { ...line, quantity: nextQuantity } : line));
+    setEditingBarcode(null);
+    setMessage('Quantidade do item atualizada.');
+  }
+
   function clearSale() {
     setCart([]);
     setCode('');
@@ -183,12 +209,12 @@ export function PointOfSale() {
             <div className="pos-barcode-field"><input ref={barcodeRef} id="pos-barcode" value={code} onChange={event => setCode(event.target.value)} placeholder="Leia ou digite o código" autoComplete="off" autoFocus /><Button type="submit" variant="outline" disabled={loading || !code.trim()}><Search />Consultar</Button></div>
           </form>
           <Button type="button" variant="outline" className="pos-camera-button" disabled={loading} onClick={() => { setScannerMessage('Aponte a câmera para o código de barras.'); setScannerOpen(true); }}><Camera />Ler com a câmera</Button>
-          {selectedProduct && <div className="pos-selected-product"><span className="pos-result-label">Produto localizado</span><strong>{selectedProduct.description || 'Produto sem descrição'}</strong><span>Preço unitário <b>{currency.format(parsePrice(selectedProduct.price) ?? 0)}</b></span><label htmlFor="pos-quantity">Quantidade (unidades)</label><div className="pos-quantity-row"><input id="pos-quantity" type="number" min="1" step="1" inputMode="numeric" value={quantity} onChange={event => setQuantity(event.target.value)} /><Button type="button" onClick={addProduct}><CirclePlus />Adicionar à venda</Button></div></div>}
+          {selectedProduct && <div className="pos-selected-product"><span className="pos-result-label">Produto localizado</span><strong>{selectedProduct.description || 'Produto sem descrição'}</strong><span>Preço unitário <b>{currency.format(parsePrice(selectedProduct.price) ?? 0)}</b></span><form onSubmit={event => { event.preventDefault(); addProduct(); }}><label htmlFor="pos-quantity">Quantidade (unidades) · Enter para adicionar</label><div className="pos-quantity-row"><input ref={quantityRef} id="pos-quantity" type="number" min="1" step="1" inputMode="numeric" value={quantity} onChange={event => setQuantity(event.target.value)} /><Button type="submit"><CirclePlus />Adicionar à venda</Button></div></form></div>}
           <p className="pos-message" role="status">{message}</p>
         </section>
         <section className="pos-cart">
           <div className="pos-section-heading pos-cart-heading"><div><strong>Itens da venda</strong><span>{cart.length} {cart.length === 1 ? 'produto' : 'produtos'} · {totalUnits} {totalUnits === 1 ? 'unidade' : 'unidades'}</span></div><Button variant="outline" onClick={clearSale} disabled={!cart.length}><Trash2 />Limpar venda</Button></div>
-          {cart.length ? <div className="pos-cart-lines">{cart.map(line => <article className="pos-cart-line" key={line.barcode}><div className="pos-cart-description"><strong>{line.description || 'Produto sem descrição'}</strong><span>Cód. {line.reducedCode || line.barcode} · {currency.format(line.unitPrice)} / un.</span></div><div className="pos-line-quantity"><button type="button" aria-label={`Diminuir quantidade de ${line.description}`} onClick={() => adjustQuantity(line.barcode, -1)}><Minus size={15} /></button><strong>{line.quantity}</strong><button type="button" aria-label={`Aumentar quantidade de ${line.description}`} onClick={() => adjustQuantity(line.barcode, 1)}><Plus size={15} /></button></div><strong className="pos-line-total">{currency.format(line.unitPrice * line.quantity)}</strong><button className="pos-remove-line" type="button" aria-label={`Remover ${line.description}`} onClick={() => setCart(current => current.filter(item => item.barcode !== line.barcode))}><X size={16} /></button></article>)}</div> : <div className="pos-empty"><Barcode size={28} /><strong>Venda sem itens</strong><span>Consulte ou leia um produto para começar.</span></div>}
+          {cart.length ? <div className="pos-cart-lines">{cart.map(line => <article className="pos-cart-line" key={line.barcode}><div className="pos-cart-description"><strong>{line.description || 'Produto sem descrição'}</strong><span>Cód. {line.reducedCode || line.barcode} · {currency.format(line.unitPrice)} / un.</span></div>{editingBarcode === line.barcode ? <form className="pos-edit-quantity" onSubmit={event => { event.preventDefault(); saveQuantity(line.barcode); }}><input aria-label={`Nova quantidade de ${line.description}`} type="number" min="1" step="1" inputMode="numeric" value={editQuantity} onChange={event => setEditQuantity(event.target.value)} autoFocus /><button type="submit" aria-label="Salvar quantidade"><Check size={15} /></button><button type="button" aria-label="Cancelar edição" onClick={() => setEditingBarcode(null)}><X size={15} /></button></form> : <div className="pos-line-quantity"><button type="button" aria-label={`Diminuir quantidade de ${line.description}`} onClick={() => adjustQuantity(line.barcode, -1)}><Minus size={15} /></button><strong>{line.quantity}</strong><button type="button" aria-label={`Aumentar quantidade de ${line.description}`} onClick={() => adjustQuantity(line.barcode, 1)}><Plus size={15} /></button><button type="button" className="pos-edit-quantity-button" aria-label={`Editar quantidade de ${line.description}`} onClick={() => startEditing(line)}><Pencil size={14} /></button></div>}<strong className="pos-line-total">{currency.format(line.unitPrice * line.quantity)}</strong><button className="pos-remove-line" type="button" aria-label={`Excluir ${line.description}`} onClick={() => setCart(current => current.filter(item => item.barcode !== line.barcode))}><Trash2 size={16} /></button></article>)}</div> : <div className="pos-empty"><Barcode size={28} /><strong>Venda sem itens</strong><span>Consulte ou leia um produto para começar.</span></div>}
           <div className="pos-grand-total"><span>Total da venda</span><strong>{currency.format(total)}</strong></div>
         </section>
       </div>
