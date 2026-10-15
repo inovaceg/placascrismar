@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Link } from '@tanstack/react-router';
 import { Printer, RotateCcw } from 'lucide-react';
 import { OfferSign } from '@/components/offer-sign';
 import { Button } from '@/components/ui/button';
@@ -58,6 +59,7 @@ export function BulkOfferSheet() {
         <p>Monte uma folha A4 com placas pequenas organizadas em grade.</p>
       </div>
       <div className="bulk-actions">
+        <Button variant="outline" asChild><Link to="/inventario">Inventário de preços</Link></Button>
         <Button variant="outline" onClick={reset}><RotateCcw />Limpar tudo</Button>
         <Button onClick={() => window.print()}><Printer />Imprimir folha A4</Button>
       </div>
