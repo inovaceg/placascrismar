@@ -59,6 +59,7 @@ export function BulkOfferSheet() {
         <p>Monte uma folha A4 com placas pequenas organizadas em grade.</p>
       </div>
       <div className="bulk-actions">
+        <Button variant="outline" asChild><Link to="/pdv">PDV</Link></Button>
         <Button variant="outline" asChild><Link to="/busca-preco">Busca preço</Link></Button>
         <Button variant="outline" asChild><Link to="/inventario">Inventário de preços</Link></Button>
         <Button variant="outline" onClick={reset}><RotateCcw />Limpar tudo</Button>

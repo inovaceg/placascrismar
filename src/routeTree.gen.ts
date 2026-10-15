@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as BuscaPrecoRouteImport } from './routes/busca-preco'
 import { Route as InventarioRouteImport } from './routes/inventario'
+import { Route as PdvRouteImport } from './routes/pdv'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -28,35 +29,44 @@ const InventarioRoute = InventarioRouteImport.update({
   path: '/inventario',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PdvRoute = PdvRouteImport.update({
+  id: '/pdv',
+  path: '/pdv',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/busca-preco': typeof BuscaPrecoRoute
   '/inventario': typeof InventarioRoute
+  '/pdv': typeof PdvRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/busca-preco': typeof BuscaPrecoRoute
   '/inventario': typeof InventarioRoute
+  '/pdv': typeof PdvRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/busca-preco': typeof BuscaPrecoRoute
   '/inventario': typeof InventarioRoute
+  '/pdv': typeof PdvRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/busca-preco' | '/inventario'
+  fullPaths: '/' | '/busca-preco' | '/inventario' | '/pdv'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/busca-preco' | '/inventario'
-  id: '__root__' | '/' | '/busca-preco' | '/inventario'
+  to: '/' | '/busca-preco' | '/inventario' | '/pdv'
+  id: '__root__' | '/' | '/busca-preco' | '/inventario' | '/pdv'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   BuscaPrecoRoute: typeof BuscaPrecoRoute
   InventarioRoute: typeof InventarioRoute
+  PdvRoute: typeof PdvRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -82,6 +92,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof InventarioRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/pdv': {
+      id: '/pdv'
+      path: '/pdv'
+      fullPath: '/pdv'
+      preLoaderRoute: typeof PdvRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -89,6 +106,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   BuscaPrecoRoute: BuscaPrecoRoute,
   InventarioRoute: InventarioRoute,
+  PdvRoute: PdvRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
