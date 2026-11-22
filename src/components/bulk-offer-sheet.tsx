@@ -17,6 +17,7 @@ export function BulkOfferSheet() {
   const [sheetCount, setSheetCount] = useState<9 | 16>(16);
   const [catalog, setCatalog] = useState<CatalogItem[]>([]);
   const [catalogNotice, setCatalogNotice] = useState('');
+  const [importing, setImporting] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -29,15 +30,25 @@ export function BulkOfferSheet() {
   }, []);
 
   async function importCatalog(file: File) {
+    setImporting(true);
+    setCatalogNotice(`Lendo ${file.name}…`);
     try {
       const loaded = await readExcelCatalog(file);
-      const saved = await replaceCatalog(loaded);
-      const available = await loadCatalog();
-      setCatalog(available);
-      setCatalogNotice(saved ? `${available.length} de ${saved} produtos gravados e disponíveis.` : 'Nenhum produto encontrado. Confira as colunas A, B, D e F.');
+      if (!loaded.length) throw new Error('Nenhum produto encontrado. Confira as colunas A (código), B (descrição), D (preço) e F (código de barras).');
+      setCatalogNotice(`${loaded.length} produtos lidos. Salvando no Supabase…`);
+      try {
+        const saved = await replaceCatalog(loaded);
+        setCatalog(await loadCatalog());
+        setCatalogNotice(`${saved} produtos importados e salvos. Digite um código de barras para preencher o produto e o preço.`);
+      } catch {
+        const available = await loadCatalog();
+        setCatalog(available);
+        setCatalogNotice(`${available.length} produtos disponíveis nesta sessão. Não foi possível concluir a gravação no Supabase. Você pode consultar os produtos e montar as placas, mas importe novamente para tentar salvar. Ao recarregar a página, os dados desta sessão serão perdidos.`);
+      }
     } catch (error) {
-      setCatalog([]);
       setCatalogNotice(error instanceof Error ? `Erro ao importar: ${error.message}` : 'Não foi possível ler este arquivo Excel.');
+    } finally {
+      setImporting(false);
     }
   }
 
@@ -66,12 +77,12 @@ export function BulkOfferSheet() {
         <Button onClick={() => window.print()}><Printer />Imprimir folha A4</Button>
       </div>
     </div>
-    <div className="bulk-import-notice" role="status">{catalogNotice || (catalog.length ? `${catalog.length} produtos disponíveis para consulta.` : 'Importe o cadastro Excel para preencher pelo código de barras.')}</div>
+    <div className="bulk-import-notice" role="status" aria-live="polite" aria-busy={importing}>{catalogNotice || (catalog.length ? `${catalog.length} produtos disponíveis para consulta.` : 'Importe o cadastro Excel para preencher pelo código de barras.')}</div>
     <div className="bulk-layout">
       <section className="bulk-form">
         <div className="bulk-form-header">
-          <div><strong>Produtos e preços</strong><span>Preencha os campos que quiser</span></div>
-          <label className="bulk-import"><span>Importar arquivo Excel</span><input type="file" accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" onChange={event => { const file = event.currentTarget.files?.[0]; event.currentTarget.value = ''; if (file) void importCatalog(file); }} /></label>
+          <div><strong>Produtos e preços</strong><span>Após importar, digite o código de barras para preencher produto e preço.</span></div>
+          <label className="bulk-import"><span>{importing ? 'Importando…' : 'Importar arquivo Excel'}</span><input type="file" disabled={importing} accept=".xlsx,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" onChange={event => { const file = event.currentTarget.files?.[0]; event.currentTarget.value = ''; if (file) void importCatalog(file); }} /></label>
           <label className="bulk-font-choice">Quantidade<select value={sheetCount} onChange={event => setSheetCount(Number(event.target.value) as 9 | 16)}><option value="9">9 placas</option><option value="16">16 placas</option></select></label>
           <label className="bulk-font-choice">Modelo<select value={model} onChange={event => setModel(event.target.value as SignModel)}><option value="minimal">Modelo simples</option><option value="classic">Oferta clássica</option></select></label>
           <label className="bulk-font-choice">Cor da folha<select value={colorMode} onChange={event => setColorMode(event.target.value as 'color' | 'monochrome')}><option value="color">Colorido</option><option value="monochrome">Preto e branco</option></select></label>

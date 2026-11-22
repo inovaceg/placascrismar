@@ -3,6 +3,7 @@ import type { CatalogItem } from '@/lib/excel-catalog';
 const endpoint = 'https://wiaqzkueanlwcoyzuupl.supabase.co/rest/v1/rpc';
 const apiKey = 'sb_publishable_pnuhuR44AzUo_WxbUgmRuA_lPDNgty5';
 const maxItems = 10000;
+let sessionCatalog: CatalogItem[] | undefined;
 
 async function callFunction<T>(name: string, body: unknown) {
   const response = await fetch(`${endpoint}/${name}`, {
@@ -15,15 +16,18 @@ async function callFunction<T>(name: string, body: unknown) {
 }
 
 export async function loadCatalog(): Promise<CatalogItem[]> {
+  if (sessionCatalog) return sessionCatalog;
   const rows = await callFunction<CatalogItem[]>('get_catalog', {});
-  return Array.isArray(rows) ? rows.slice(0, maxItems) : [];
+  // An import may have finished while this request was pending.
+  return sessionCatalog ?? (Array.isArray(rows) ? rows.slice(0, maxItems) : []);
 }
 
 export async function replaceCatalog(items: CatalogItem[]) {
-  const unique = [...new Map(items.filter(item => item.barcode.trim()).map(item => [item.barcode.trim(), item])).values()].slice(0, maxItems);
-  for (let index = 0; index < Math.max(unique.length, 1); index += 500) {
+  const unique = [...new Map(items.filter(item => item.barcode.trim()).map(item => [item.barcode.trim(), { ...item, barcode: item.barcode.trim() }])).values()].slice(0, maxItems);
+  if (!unique.length) throw new Error('Nenhum produto encontrado. Confira as colunas A (código), B (descrição), D (preço) e F (código de barras).');
+  sessionCatalog = unique;
+  for (let index = 0; index < unique.length; index += 500) {
     await callFunction<number>('save_catalog_batch', { items: unique.slice(index, index + 500), reset: index === 0 });
-    if (unique.length === 0) break;
   }
   return unique.length;
 }
